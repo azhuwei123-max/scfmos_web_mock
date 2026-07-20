@@ -1,0 +1,129 @@
+:root {
+  --login-bg-color: #293146;
+
+  --left-menu-max-width: 200px;
+
+  --left-menu-min-width: 64px;
+
+  --left-menu-bg-color: #ffffff;
+
+  --left-menu-bg-light-color: #f5f7fa;
+
+  --left-menu-bg-active-color: rgba(64, 158, 255, 0.14);
+
+  --left-menu-text-color: rgba(31, 41, 55, 0.78);
+
+  --left-menu-text-active-color: #1d4ed8;
+
+  --left-menu-collapse-bg-active-color: rgba(64, 158, 255, 0.2);
+  --left-menu-hover-bg-color: rgba(15, 23, 42, 0.04);
+  --left-menu-submenu-active-bg-color: rgba(64, 158, 255, 0.08);
+  --left-menu-font-size: 14px;
+  --left-menu-title-font-size: 14px;
+  /* left menu end */
+
+  /* logo start */
+  --logo-height: 50px;
+
+  --logo-title-text-color: #1f2937;
+  --logo-title-font-size: 18px;
+  /* logo end */
+
+  /* header start */
+  --top-header-bg-color: '#fff';
+
+  --top-header-text-color: 'inherit';
+
+  --top-header-hover-color: #f6f6f6;
+
+  --top-tool-height: var(--logo-height);
+
+  --top-tool-p-x: 0;
+
+  --tags-view-height: 35px;
+  --top-header-font-size: 14px;
+  /* header start */
+
+  /* tab menu start */
+  --tab-menu-max-width: 80px;
+
+  --tab-menu-min-width: 30px;
+
+  --tab-menu-collapse-height: 36px;
+  --tab-menu-font-size: 12px;
+  /* tab menu end */
+
+  --app-content-padding: 1px;
+
+  --app-content-bg-color: #f1f1f1;
+
+  --app-footer-height: 50px;
+
+  --transition-time-02: 0.2s;
+  
+  /* 字体大小往信贷靠拢，与UI和业务老师确认基础字体大小为13px */
+  --base-font-size: 13px;
+  --small-font-size: 12px;
+  --large-font-size: 16px;
+
+  --table-font-size: 13px;
+  --table-header-font-size: 13px;
+
+  --table-font-color: #000;
+
+  --form-label-font-size: 13px;
+  --form-input-font-size: 13px;
+  --form-font-color: #333;
+
+  --button-font-size: 13px;
+
+  --search-form-height: 21px;
+
+  /* 覆盖Element plus 变量 */
+  --el-fill-color-lighter: #f1f1f1;
+  
+  --el-border-color-lighter: #d9d9d9;
+
+  --el-font-family: 'Microsoft YaHei', '微软雅黑', 'sans-serif';
+
+  --el-card-padding: 12px 20px;
+
+  --el-text-color-regular: #333;
+}
+
+.dark {
+  --app-content-bg-color: #f1f1f1;
+  --left-menu-hover-bg-color: rgba(255, 255, 255, 0.06);
+  --left-menu-submenu-active-bg-color: rgba(255, 255, 255, 0.04);
+}
+
+html,
+body {
+  /* font-size: clamp(12px, calc(100vw / 120), 18px); */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Microsoft YaHei', '微软雅黑', 'sans-serif';
+}
+
+/* View Transition API 支持 - 提升主题切换动画 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2147483646;
+}
+
+html.dark::view-transition-old(root) {
+  z-index: 2147483646;
+}
+
+html.dark::view-transition-new(root) {
+  z-index: 1;
+}

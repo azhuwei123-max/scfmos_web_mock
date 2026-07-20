@@ -1,0 +1,17 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+/dist*
+*-lock.*
+pnpm-debug
+auto-*.d.ts
+.idea
+.history
+dist/*
+dist-prod/*
+dist-stage/*
+auto-components.d.ts
+hs_err_pid*.log
+replay_pid*.log

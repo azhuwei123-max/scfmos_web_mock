@@ -1,0 +1,89 @@
+<template>
+  <Dialog
+    v-model="visible"
+    title="选择省市区"
+    width="1000px"
+    top="5vh"
+    class="customer-region-code-pop"
+  >
+    <el-cascader-panel
+      ref="cascaderPanelRef"
+      v-loading="loading"
+      :options="areaList"
+      :props="treeProps"
+    />
+    <template #footer>
+      <el-button tpye="" :loading="saving" @click="confirm">确 定</el-button>
+      <el-button @click="visible = false">取 消</el-button>
+    </template>
+  </Dialog>
+</template>
+
+<script setup>
+import { getAreaTree } from '@/api/system/area'
+import { ElMessage } from 'element-plus'
+
+const visible = ref(false)
+
+const treeProps = {
+  children: 'children',
+  label: 'title',
+  value: 'key'
+}
+
+const emit = defineEmits(['confirm'])
+
+const areaList = ref([])
+const loading = ref(false)
+const getData = async () => {
+  loading.value = true
+  const data = await getAreaTree().finally((_) => (loading.value = false))
+  areaList.value = noDisabled(data)
+}
+
+const noDisabled = (data) => {
+  data.forEach((v) => {
+    delete v.disabled
+
+    if (v.children?.length) {
+      return noDisabled(v.children)
+    }
+  })
+
+  return data
+}
+
+const open = () => {
+  visible.value = true
+  if (!areaList.value?.length) {
+    getData()
+  }
+}
+
+const cascaderPanelRef = ref()
+const confirm = () => {
+  const checked = cascaderPanelRef.value.getCheckedNodes(true)
+  if (!checked.length) return ElMessage.warning('请选择')
+
+  visible.value = false
+  emit('confirm', checked[0].data)
+}
+
+defineExpose({
+  open
+})
+</script>
+
+<style lang="scss" scoped>
+.customer-region-code-pop {
+  height: 55vh;
+
+  .el-cascader-panel {
+    height: 400px;
+
+    :deep(.el-cascader-menu__wrap.el-scrollbar__wrap) {
+      height: 100%;
+    }
+  }
+}
+</style>

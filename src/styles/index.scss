@@ -1,0 +1,262 @@
+@import './var.css';
+@import 'element-plus/theme-chalk/dark/css-vars.css';
+
+.reset-margin [class*='el-icon'] + span {
+  margin-left: 2px !important;
+}
+
+.el-picker-panel__sidebar {
+  width: 80px;
+}
+
+.el-form-item__label {
+  color: #333
+}
+
+body {
+  font-size: var(--base-font-size);
+}
+
+.v-menu {
+  font-size: var(--left-menu-font-size);
+
+  .v-menu__title {
+    font-size: var(--left-menu-title-font-size);
+  }
+}
+
+.v-app-logo__title {
+  font-size: var(--logo-title-font-size);
+}
+
+.v-tool {
+  font-size: var(--top-header-font-size);
+}
+
+.v-tab-menu {
+  font-size: var(--tab-menu-font-size);
+}
+
+.el-table {
+  --el-table-current-row-bg-color: #C0E0FD;
+  --el-table-row-hover-bg-color: #C0E0FD;
+  --el-table-border-color: #d9d9d9;
+  --el-table-header-text-color: #000;
+
+  .el-table__header th.el-table__cell {
+    background: linear-gradient(180deg,#fff,#f1f1f1);
+  }
+
+  .el-table__cell {
+    padding: 4px 0px;
+  }
+
+  font-size: var(--table-font-size);
+  color: var(--table-font-color);
+  .el-table__header {
+    font-size: var(--table-header-font-size);
+  }
+  // .el-table__body tr:hover > td.el-table__cell {
+  //   background: transparent !important;
+  // }
+  // .el-table--striped .el-table__body tr.el-table__row--striped:hover > td.el-table__cell {
+  //   background: transparent !important;
+  // }
+}
+
+.el-form {
+  .el-form-item__label {
+    font-size: var(--form-label-font-size);
+  }
+
+  .el-input__inner,
+  .el-textarea__inner,
+  .el-select .el-input__inner {
+    font-size: var(--form-input-font-size);
+  }
+
+  .el-select__wrapper {
+    font-size: var(--form-input-font-size);
+  }
+
+  .el-select__placeholder {
+    // color: var(--form-font-color);
+    font-size: var(--form-input-font-size);
+  }
+}
+
+.el-button {
+  font-size: var(--button-font-size);
+}
+
+/* 页面切换动画，参考 vben-leo 过渡效果 */
+.page-fade-slide {
+  animation: page-fade-slide-in 0.45s cubic-bezier(0.2, 0, 0, 1) both;
+  will-change: opacity, transform, filter;
+  backface-visibility: hidden;
+}
+
+@keyframes page-fade-slide-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(40px, 0, 0) scale(0.96);
+    filter: blur(6px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translate3d(-6px, 0, 0) scale(1.02);
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-fade-slide {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+html {
+  color-scheme: light;
+
+  &.dark {
+    color-scheme: dark;
+  }
+}
+
+.theme-toggle,
+.color-toggle-wrapper {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+// 解决抽屉弹出时，body宽度变化的问题
+.el-popup-parent--hidden {
+  width: 100% !important;
+}
+
+// 解决表格内容超过表格总宽度后，横向滚动条前端顶不到表格边缘的问题
+.el-scrollbar__bar {
+  display: flex;
+  justify-content: flex-start;
+}
+.el-dialog__footer {
+  .el-button {
+    width: 88px;
+  }
+}
+
+/* nprogress 适配 element-plus 的主题色 */
+#nprogress {
+  & .bar {
+    background-color: var(--el-color-primary) !important;
+  }
+
+  & .peg {
+    box-shadow:
+      0 0 10px var(--el-color-primary),
+      0 0 5px var(--el-color-primary) !important;
+  }
+
+  & .spinner-icon {
+    border-top-color: var(--el-color-primary);
+    border-left-color: var(--el-color-primary);
+  }
+}
+
+.cell .el-tag {
+  border-radius: 0px !important;
+  border-color: inherit !important;
+}
+
+.el-input.is-disabled .el-input__inner,
+.el-select__wrapper.is-disabled .el-select__selected-item,
+.el-textarea.is-disabled .el-textarea__inner {
+  color: #333 !important;
+  -webkit-text-fill-color: #333 !important;
+}
+
+.dynamic-form {
+  background-color: #fff;
+  .el-collapse {
+    border: none;
+    .el-collapse-item__header {
+      border: none;
+    }
+    .el-collapse-item__wrap {
+      border: none;
+    }
+    .el-collapse-item {
+      padding: 0 15px;
+      border: 2px solid #eee;
+      margin-bottom: 10px;
+    }
+  }
+
+  
+  .el-form-item.is-required:not(.is-no-asterisk).asterisk-left>.el-form-item__label-wrap>.el-form-item__label:before, .el-form-item.is-required:not(.is-no-asterisk).asterisk-left>.el-form-item__label:before {
+    content: none;
+  }
+  .el-form-item.is-required:not(.is-no-asterisk).asterisk-left>.el-form-item__label-wrap>.el-form-item__label:before, .el-form-item.is-required:not(.is-no-asterisk).asterisk-left>.el-form-item__label:after {
+    color: var(--el-color-danger);
+    content: "*";
+    margin: 0px 4px;
+  }
+}
+
+.notification-center {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.el-card {
+  .el-card__body {
+    padding: var(--el-card-padding);
+  }
+}
+
+//重置列表滚动条样式
+.el-table__body-wrapper {
+  .el-scrollbar__bar {
+    bottom: 0px;
+  }
+  .el-scrollbar__bar.is-horizontal {
+    height: 12px;
+    position: relative;
+    .el-scrollbar__thumb {
+      background-color: #606266;
+    }
+  }
+}
+
+//重置查询条件样式
+.search-form {
+  .el-input__inner {
+    height: 24px;
+    line-height: 24px;
+  }
+  .el-form-item--default {
+    margin-bottom: 0px;
+  }
+  .el-select__wrapper {
+    min-height: 26px;
+  }
+  .el-date-editor.el-input {
+    height: 26px;
+  }
+  .el-input__wrapper {
+    height: 26px;
+  }
+  margin-bottom: 10px;
+}

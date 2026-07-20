@@ -1,0 +1,79 @@
+{
+  "code": 0,
+  "data": {
+    "list": [
+      {
+        "customerID": "2015101400000146",
+        "customerName": "2015101400000146",
+        "certTypeName": "身份证",
+        "certID": "350925194112260291",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "2015102700000069",
+        "customerName": "2015102700000069",
+        "certTypeName": "身份证",
+        "certID": "350925190603019824",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "2015102700000086",
+        "customerName": "2015102700000086",
+        "certTypeName": "身份证",
+        "certID": "350925197904165560",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "2015102700000095",
+        "customerName": "2015102700000095",
+        "certTypeName": "身份证",
+        "certID": "350925197912145949",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "2015072800000069",
+        "customerName": "2015072800000069",
+        "certTypeName": "身份证",
+        "certID": "212221194801315654",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "2017072700000173",
+        "customerName": "2017072700000173",
+        "certTypeName": "身份证",
+        "certID": "410726192207291579",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "2017080300000184",
+        "customerName": "2017080300000184",
+        "certTypeName": "身份证",
+        "certID": "350403197609166274",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "LH201808300300002214",
+        "customerName": "LH201808300300002214",
+        "certTypeName": "身份证",
+        "certID": "141082190610164392",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "WI202003180000000013",
+        "customerName": "WI202003180000000013",
+        "certTypeName": "身份证",
+        "certID": "440506191603043766",
+        "customerTypeName": "受薪人士"
+      },
+      {
+        "customerID": "2015101900000106",
+        "customerName": "2015101900000106",
+        "certTypeName": "身份证",
+        "certID": "350203198202282445",
+        "customerTypeName": "受薪人士"
+      }
+    ],
+    "total": 1048
+  },
+  "msg": ""
+}

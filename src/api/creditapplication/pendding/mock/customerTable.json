@@ -1,0 +1,79 @@
+{
+  "code": 0,
+  "data": {
+    "list": [
+      {
+        "customerID": "SC2025040700000001",
+        "customerName": "高抬贵手",
+        "certTypeName": "其他企业证件",
+        "certID": "345265166",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025040200000005",
+        "customerName": "通威个人公司一",
+        "certTypeName": "其他企业证件",
+        "certID": "71514441-1",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025040100000001",
+        "customerName": "通威股份有限公司",
+        "certTypeName": "统一社会信用代码(营业执照)",
+        "certID": "91310000MA7FXWMT8N",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025031100000015",
+        "customerName": "玥对公七",
+        "certTypeName": "统一社会信用代码(营业执照)",
+        "certID": "92330522MAECAP1A4F",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025031100000001",
+        "customerName": "老乡鸡鸡汤03",
+        "certTypeName": "统一社会信用代码(营业执照)",
+        "certID": "92410106MA41FQDY90",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025031000000002",
+        "customerName": "老鸭汤供应链非融合公司008",
+        "certTypeName": "其他企业证件",
+        "certID": "77610504-5",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025030700000001",
+        "customerName": "玥对公六",
+        "certTypeName": "统一社会信用代码(营业执照)",
+        "certID": "92341882MAEB8K3J54",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025030600000015",
+        "customerName": "产业贷公司一",
+        "certTypeName": "统一社会信用代码(营业执照)",
+        "certID": "91341200MA2NGNN590",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025030600000012",
+        "customerName": "玥对公五",
+        "certTypeName": "统一社会信用代码(营业执照)",
+        "certID": "91420100MAEBWAHC00",
+        "customerTypeName": "公司客户"
+      },
+      {
+        "customerID": "SC2025030500000010",
+        "customerName": "玥对公四",
+        "certTypeName": "统一社会信用代码(营业执照)",
+        "certID": "91110112MAEBEBF55U",
+        "customerTypeName": "公司客户"
+      }
+    ],
+    "total": 533
+  },
+  "msg": ""
+}
