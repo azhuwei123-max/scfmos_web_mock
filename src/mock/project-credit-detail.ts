@@ -111,23 +111,81 @@ export const projectCreditDetail = {
       title: '基本信息',
       description: '本申请为核心企业供应链金融项下的新增综合授信额度申请。',
       fields: [
-        { label: '客户编号', value: 'SC2025040300000003' },
-        { label: '核心企业名称', value: '阿姆特拉斯供应链有限公司' },
-        { label: '发生日期', value: '2026/07/20' },
-        { label: '发生方式', value: '续作' },
-        { label: '业务品种', value: '单一客户综合授信' },
-        { label: '币种', value: '人民币' },
-        { label: '额度金额', value: '10,000,000.00 元' },
-        { label: '供应链标识', value: '纯供应链' },
-        { label: '供应链产品方案', value: '保理融资、经销商融资、订单融资' },
-        { label: '敞口金额', value: '8,000,000.00 元' },
-        { label: '期限', value: '6.00 月' },
-        { label: '额度使用期限', value: '2026/07/20 至 2027/07/19' },
-        { label: '业务来源', value: '供应链作业平台' },
-        { label: '是否循环', value: '是' },
-        { label: '主要担保方式', value: '保证、应收账款质押' },
-        { label: '是否转授信', value: '是' },
-        { label: '备注', value: '用于核心企业上下游供应商融资及经销商备货融资。', span: 2 }
+        { key: 'customerNo', label: '客户编号', value: 'SC2025040300000003', editor: 'text', required: true },
+        { key: 'coreEnterpriseName', label: '核心企业名称', value: '阿姆特拉斯供应链有限公司', editor: 'picker', picker: 'enterprise', required: true },
+        { key: 'occurDate', label: '发生日期', value: '2026/07/20', editor: 'date', required: true },
+        {
+          key: 'occurType',
+          label: '发生方式',
+          value: '续作',
+          editor: 'select',
+          options: ['新增', '续作', '复议', '重组'],
+          required: true
+        },
+        { key: 'businessType', label: '业务品种', value: '单一客户综合授信', editor: 'picker', picker: 'businessType', required: true },
+        {
+          key: 'currency',
+          label: '币种',
+          value: '人民币',
+          editor: 'select',
+          options: ['人民币', '美元', '欧元', '港币'],
+          required: true
+        },
+        { key: 'creditAmount', label: '额度金额', value: 10000000, editor: 'number', unit: '元', required: true },
+        {
+          key: 'supplyChainFlag',
+          label: '供应链标识',
+          value: '纯供应链',
+          editor: 'select',
+          options: ['纯供应链', '非纯供应链', '混合供应链'],
+          required: true
+        },
+        {
+          key: 'productPlan',
+          label: '供应链产品方案',
+          value: ['保理融资', '经销商融资', '订单融资'],
+          editor: 'checkbox',
+          options: ['保理融资', '订单融资', '经销商融资', '预付款融资', '存货质押融资', '国内保理'],
+          span: 2,
+          required: true
+        },
+        { key: 'exposureAmount', label: '敞口金额', value: 8000000, editor: 'number', unit: '元', required: true },
+        { key: 'term', label: '期限', value: 6, editor: 'number', unit: '月', required: true },
+        { key: 'creditPeriod', label: '额度使用期限', value: '2026/07/20 至 2027/07/19', editor: 'text' },
+        {
+          key: 'businessSource',
+          label: '业务来源',
+          value: '供应链作业平台',
+          editor: 'select',
+          options: ['供应链作业平台', '客户经理录入', '网银渠道', '批量导入']
+        },
+        {
+          key: 'isCirculation',
+          label: '是否循环',
+          value: '是',
+          editor: 'select',
+          options: ['是', '否'],
+          required: true
+        },
+        { key: 'guaranteeMode', label: '主要担保方式', value: '保证、应收账款质押', editor: 'picker', picker: 'guarantee', required: true },
+        {
+          key: 'industryLoanType',
+          label: '养老产业贷款',
+          value: '非养老产业贷款',
+          editor: 'select',
+          options: ['非养老产业贷款', '养老产业贷款']
+        },
+        { key: 'guaranteeRatio', label: '最低保证金比例', value: 2, editor: 'number', unit: '%' },
+        {
+          key: 'isTransferCredit',
+          label: '是否转授信',
+          value: '是',
+          editor: 'select',
+          options: ['是', '否'],
+          required: true
+        },
+        { key: 'averageSalary', label: '企业平均月工资', value: 12000, editor: 'number', unit: '元' },
+        { key: 'remark', label: '备注', value: '用于核心企业上下游供应商融资及经销商备货融资。', editor: 'textarea', span: 2 }
       ]
     },
     relatedCredit: {

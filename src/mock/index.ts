@@ -8,6 +8,40 @@ const urlQuery = (url = '') => Object.fromEntries(new URLSearchParams(url.split(
 const isPage = (url: string) => /(?:^|\/)(?:page|.*Page)$|\/page\//i.test(url)
 const isOptionList = (url: string) => /simple-list|\/all$|select|query.*list|menu|tree|codeLibrary|dictionary|dict-data/i.test(url)
 const isDetail = (url: string) => /\/get$|\/detail$|info|template|profile|customer/i.test(url)
+const cloneMockData = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
+const projectCreditDetailCacheKey = 'scfmos.mock.project-credit-detail-cache'
+const loadProjectCreditDetailCache = (): Record<string, Recordable> => {
+  if (typeof window === 'undefined') return {}
+
+  try {
+    const cached = window.sessionStorage.getItem(projectCreditDetailCacheKey)
+    const parsed = cached ? JSON.parse(cached) : {}
+    return typeof parsed === 'object' && parsed ? (parsed as Record<string, Recordable>) : {}
+  } catch {
+    return {}
+  }
+}
+const projectCreditDetailCache = loadProjectCreditDetailCache()
+const persistProjectCreditDetailCache = () => {
+  if (typeof window === 'undefined') return
+
+  try {
+    window.sessionStorage.setItem(projectCreditDetailCacheKey, JSON.stringify(projectCreditDetailCache))
+  } catch {
+    // 本地演示缓存失败时仍保留本页内存数据，不影响详情页操作。
+  }
+}
+const parseMockPayload = (data: unknown): Recordable => {
+  if (typeof data === 'object' && data) return data as Recordable
+  if (typeof data !== 'string') return {}
+
+  try {
+    const parsed = JSON.parse(data)
+    return typeof parsed === 'object' && parsed ? (parsed as Recordable) : {}
+  } catch {
+    return Object.fromEntries(new URLSearchParams(data))
+  }
+}
 
 const pageData = (config: AxiosRequestConfig) => {
   const query = { ...urlQuery(config.url), ...(config.params || {}) }
@@ -89,11 +123,42 @@ export const mockAdapter: AxiosAdapter = async (config) => {
       pageNo,
       pageSize
     }
+  } else if (/\/system\/creditLimitApply\/saveProjectDetail$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const serialNo = String(payload.serialNo || projectCreditDetail.applicationNo)
+    const savedDetail = cloneMockData(
+      projectCreditDetailCache[serialNo] || (projectCreditDetail as unknown as Recordable)
+    )
+    const basicFields = Array.isArray(payload.basicFields) ? cloneMockData(payload.basicFields) : undefined
+
+    if (basicFields) {
+      const sections = savedDetail.sections as Recordable
+      const basic = sections.basic as Recordable
+      basic.fields = basicFields
+
+      const coreEnterpriseName = basicFields.find(
+        (field: Recordable) => field.key === 'coreEnterpriseName'
+      )?.value
+      if (typeof coreEnterpriseName === 'string' && coreEnterpriseName) {
+        savedDetail.customerName = coreEnterpriseName
+        const customer = savedDetail.customer as Recordable
+        const customerNameField = (customer.fields as Recordable[]).find(
+          (field) => field.label === '客户名称'
+        )
+        if (customerNameField) customerNameField.value = coreEnterpriseName
+      }
+    }
+
+    projectCreditDetailCache[serialNo] = savedDetail
+    persistProjectCreditDetailCache()
+    data = cloneMockData(savedDetail)
   } else if (/\/system\/creditLimitApply\/getProjectDetail$/.test(url)) {
     const serialNo = String(urlQuery(config.url).serialNo || config.params?.serialNo || '')
+    const detailKey = serialNo || projectCreditDetail.applicationNo
+    const projectDetail = projectCreditDetailCache[detailKey] || (projectCreditDetail as unknown as Recordable)
     data = {
-      ...projectCreditDetail,
-      applicationNo: serialNo || projectCreditDetail.applicationNo
+      ...cloneMockData(projectDetail),
+      applicationNo: detailKey
     }
   } else if (/captcha\/(get|check)$/.test(url)) {
     data = { repCode: '0000', repMsg: '校验成功', uuid: 'mock-captcha', captchaType: 'blockPuzzle' }
