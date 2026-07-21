@@ -1135,13 +1135,27 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
     "parentId": 0,
     "name": "债项管理",
     "path": "/indebt",
-    "component": "indebt/index",
-    "componentName": "indebt",
+    "component": null,
+    "componentName": null,
     "icon": null,
     "visible": true,
     "keepAlive": true,
     "alwaysShow": true,
-    "children": null
+    "children": [
+      {
+        "id": 1726,
+        "parentId": 1239,
+        "name": "存货类商品管理",
+        "path": "inventoryGoods",
+        "component": "indebt/inventoryGoods/index",
+        "componentName": "InventoryGoodsManagement",
+        "icon": null,
+        "visible": true,
+        "keepAlive": true,
+        "alwaysShow": true,
+        "children": null
+      }
+    ]
   },
   {
     "id": 1200,
@@ -1424,4 +1438,3 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
   }
 ]
 `) as IntranetPermissionMenu[]
-

@@ -1,5 +1,10 @@
 import type { AxiosAdapter, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { dashboardTabs, dashboardTasks, dictData, optionData, pageRecords, permissionInfo } from './data'
+import {
+  createInventoryGoodsRecord,
+  inventoryGoodsRecords,
+  markInventoryGoodsHistory
+} from './inventory-goods'
 import { projectCreditApplyRecords, projectCreditDetail } from './project-credit-detail'
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
@@ -62,6 +67,25 @@ const detailData = (config: AxiosRequestConfig) => ({
   contactName: '王磊',
   contactMobile: '13800000000'
 })
+
+const inventoryGoodsPageData = (config: AxiosRequestConfig) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const largeCategoryCode = String(query.largeCategoryCode || '').trim()
+  const largeCategoryName = String(query.largeCategoryName || '').trim()
+  const status = String(query.status || '').trim()
+  const filtered = inventoryGoodsRecords.filter((record) => {
+    const matchesCode = !largeCategoryCode || record.largeCategoryCode.includes(largeCategoryCode)
+    const matchesName = !largeCategoryName || record.largeCategoryName.includes(largeCategoryName)
+    const matchesStatus = !status || record.status === status
+    return matchesCode && matchesName && matchesStatus
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
 
 export const mockAdapter: AxiosAdapter = async (config) => {
   await sleep(120)
@@ -160,6 +184,16 @@ export const mockAdapter: AxiosAdapter = async (config) => {
       ...cloneMockData(projectDetail),
       applicationNo: detailKey
     }
+  } else if (/\/system\/indebt\/inventory-goods\/page$/.test(url)) {
+    data = inventoryGoodsPageData(config)
+  } else if (/\/system\/indebt\/inventory-goods\/active-list$/.test(url)) {
+    data = cloneMockData(inventoryGoodsRecords.filter((record) => record.status === '启用'))
+  } else if (/\/system\/indebt\/inventory-goods\/create$/.test(url)) {
+    data = cloneMockData(createInventoryGoodsRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/indebt\/inventory-goods\/history$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const ids = Array.isArray(payload.ids) ? payload.ids : []
+    data = { updated: markInventoryGoodsHistory(ids) }
   } else if (/captcha\/(get|check)$/.test(url)) {
     data = { repCode: '0000', repMsg: '校验成功', uuid: 'mock-captcha', captchaType: 'blockPuzzle' }
   } else if (/auth\/logout|\/create$|\/update$|\/delete$|\/save|\/submit|\/cancel|\/approve|\/reject|\/withdraw|\/add$|\/edit$|\/upload/i.test(url)) {
