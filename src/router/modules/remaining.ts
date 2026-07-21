@@ -659,7 +659,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
         },
         {
           path:'creditApplyJob/detail',
-          component:()=> import("@/views/creditapplication/creditApplyJob/customerDetail/index.vue"),
+          component:()=> import("@/views/creditapplication/creditApplyJob/projectCreditDetail/index.vue"),
           name:'creditApplyJobDetail',
           meta:{
             title:'授信额度申请-详情',

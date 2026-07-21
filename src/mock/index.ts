@@ -1,5 +1,6 @@
 import type { AxiosAdapter, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { dashboardTabs, dashboardTasks, dictData, optionData, pageRecords, permissionInfo } from './data'
+import { projectCreditApplyRecords, projectCreditDetail } from './project-credit-detail'
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const urlPath = (url = '') => url.split('?')[0].replace(/^https?:\/\/[^/]+/, '')
@@ -76,6 +77,23 @@ export const mockAdapter: AxiosAdapter = async (config) => {
         { serialNo: 'SCF202607200001', customerID: 'C202607200001', customerName: '华东供应链有限公司', mrchFlg: '直营网银', businessTypeName: '供应链流动资金贷款', virtualOccurTypeName: '新增', applyModelTypeName: '授信审批', currencyName: '人民币', businessSum: 1200000, sourceFrom: '供应链金融平台', operateUserName: '张晨', operateOrgName: '总行供应链金融部', flowName: '授信申请流程', phaseName: '待审批', endTime: '', projectName: '核心企业供应链金融项目', objectType: 'CreditApply', phaseNo: '1020' },
         { serialNo: 'SCF202607190002', customerID: 'C202607190002', customerName: '新城贸易有限公司', mrchFlg: '线下录入', businessTypeName: '经销商融资', virtualOccurTypeName: '续作', applyModelTypeName: '授信审批', currencyName: '人民币', businessSum: 800000, sourceFrom: '客户经理录入', operateUserName: '李敏', operateOrgName: '上海分行', flowName: '授信申请流程', phaseName: '待审批', endTime: '', projectName: '经销商融资项目', objectType: 'CreditApply', phaseNo: '1020' }
       ]
+    }
+  } else if (/\/system\/creditLimitApply\/qryApplyListPage$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const pageNo = Number(query.pageNo || query.pageNum || 1)
+    const pageSize = Number(query.pageSize || 10)
+    data = {
+      total: projectCreditApplyRecords.length,
+      list: projectCreditApplyRecords,
+      records: projectCreditApplyRecords,
+      pageNo,
+      pageSize
+    }
+  } else if (/\/system\/creditLimitApply\/getProjectDetail$/.test(url)) {
+    const serialNo = String(urlQuery(config.url).serialNo || config.params?.serialNo || '')
+    data = {
+      ...projectCreditDetail,
+      applicationNo: serialNo || projectCreditDetail.applicationNo
     }
   } else if (/captcha\/(get|check)$/.test(url)) {
     data = { repCode: '0000', repMsg: '校验成功', uuid: 'mock-captcha', captchaType: 'blockPuzzle' }
