@@ -6,6 +6,67 @@ import {
   markInventoryGoodsHistory
 } from './inventory-goods'
 import { projectCreditApplyRecords, projectCreditDetail } from './project-credit-detail'
+import {
+  createWarehouseApplicationRecord,
+  getWarehouseApplicationRecord,
+  signWarehouseApplicationOpinionRecord,
+  submitWarehouseApplicationRecord,
+  withdrawWarehouseApplicationRecord,
+  warehouseApplicationRecords
+} from './warehouse-management'
+import {
+  approveInventoryPriceApplicationRecord,
+  batchSubmitInventoryPriceApplicationRecords,
+  createInventoryPriceApplicationRecord,
+  getInventoryPriceApplicationRecord,
+  getInventoryPriceExcelTemplate,
+  getInventoryPriceTrendData,
+  inventoryPriceApplicationRecords,
+  inventoryPriceAvailableProjects,
+  signInventoryPriceApplicationOpinion,
+  submitInventoryPriceApplicationRecord,
+  updateInventoryPriceApplicationRecord,
+  uploadInventoryPriceApplicationImage,
+  uploadInventoryPriceExcelRecord,
+  withdrawInventoryPriceApplicationRecord
+} from './inventory-price-management'
+import {
+  approveAssetArrivalApplicationRecord,
+  assetArrivalApplicationRecords,
+  assetArrivalAvailableProjects,
+  batchSubmitAssetArrivalApplicationRecords,
+  createAssetArrivalApplicationRecord,
+  getAssetArrivalApplicationFlowRecords,
+  getAssetArrivalApplicationImages,
+  getAssetArrivalApplicationOpinions,
+  getAssetArrivalApplicationRecord,
+  signAssetArrivalApplicationOpinionRecord,
+  submitAssetArrivalApplicationRecord,
+  updateAssetArrivalConfirmationRecord,
+  uploadAssetArrivalApplicationImage,
+  withAssetArrivalProjectAliases,
+  withdrawAssetArrivalApplicationRecord
+} from './asset-arrival-management'
+import {
+  batchSubmitOrderContractModificationRecords,
+  createOrderContractModificationItem,
+  createOrderContractModificationRecord,
+  deleteOrderContractModificationItem,
+  deleteOrderContractModificationRecord,
+  getOrderContractModificationByNode,
+  getOrderContractModificationImages,
+  getOrderContractModificationRecord,
+  invalidateOrderContractModificationRecord,
+  orderContractModificationHistoryRecords,
+  orderContractModificationRecords,
+  signOrderContractModificationOpinion,
+  submitOrderContractModificationRecord,
+  updateOrderContractModificationItem,
+  updateOrderContractModificationItems,
+  updateOrderContractModificationRecord,
+  uploadOrderContractModificationImage,
+  availableOrderContractRecords
+} from './order-contract-modification'
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const urlPath = (url = '') => url.split('?')[0].replace(/^https?:\/\/[^/]+/, '')
@@ -80,6 +141,157 @@ const inventoryGoodsPageData = (config: AxiosRequestConfig) => {
     const matchesName = !largeCategoryName || record.largeCategoryName.includes(largeCategoryName)
     const matchesStatus = !status || record.status === status
     return matchesCode && matchesName && matchesStatus
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
+
+const warehouseApplicationPageData = (config: AxiosRequestConfig) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || query.pageNum || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const phase = String(query.phase || '').trim()
+  const status = String(query.status || query.applicationStatus || '').trim()
+  const applicationNo = String(query.applicationNo || query.applyNo || query.serialNo || '').trim()
+  const customerName = String(query.customerName || query.coreEnterpriseName || '').trim()
+  const projectName = String(query.projectName || '').trim()
+  const regulatorEnterpriseName = String(query.regulatorEnterpriseName || '').trim()
+  const warehouseName = String(query.warehouseName || '').trim()
+  const filtered = warehouseApplicationRecords.filter((record) => {
+    const matchesPhase = !phase || record.phase === phase
+    const matchesStatus = !status || record.status === status
+    const matchesApplicationNo = !applicationNo || record.applicationNo.includes(applicationNo)
+    const matchesCustomerName = !customerName || record.coreEnterpriseName.includes(customerName)
+    const matchesProjectName = !projectName || record.projectName.includes(projectName)
+    const matchesRegulator =
+      !regulatorEnterpriseName || record.regulatorEnterpriseName.includes(regulatorEnterpriseName)
+    const matchesWarehouseName = !warehouseName || record.warehouseName.includes(warehouseName)
+    return (
+      matchesPhase &&
+      matchesStatus &&
+      matchesApplicationNo &&
+      matchesCustomerName &&
+      matchesProjectName &&
+      matchesRegulator &&
+      matchesWarehouseName
+    )
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
+
+const inventoryPriceApplicationPageData = (config: AxiosRequestConfig) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || query.pageNum || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const phase = String(query.phase || '').trim()
+  const status = String(query.status || query.applicationStatus || '').trim()
+  const applicationNo = String(query.applicationNo || query.applyNo || query.serialNo || '').trim()
+  const projectNo = String(query.projectNo || '').trim()
+  const projectName = String(query.projectName || '').trim()
+  const smallCategory = String(query.smallCategory || '').trim()
+  const origin = String(query.origin || '').trim()
+  const filtered = inventoryPriceApplicationRecords.filter((record) => {
+    const matchesPhase = !phase || record.phase === phase
+    const matchesStatus = !status || record.status === status
+    const matchesApplicationNo = !applicationNo || record.applicationNo.includes(applicationNo)
+    const matchesProjectNo = !projectNo || record.projectNo.includes(projectNo)
+    const matchesProjectName = !projectName || record.projectName.includes(projectName)
+    const matchesSmallCategory = !smallCategory || record.smallCategory.includes(smallCategory)
+    const matchesOrigin = !origin || record.origin.includes(origin)
+    return (
+      matchesPhase &&
+      matchesStatus &&
+      matchesApplicationNo &&
+      matchesProjectNo &&
+      matchesProjectName &&
+      matchesSmallCategory &&
+      matchesOrigin
+    )
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
+
+const assetArrivalApplicationPageData = (config: AxiosRequestConfig) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || query.pageNum || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const phase = String(query.phase || '').trim()
+  const status = String(query.status || query.applicationStatus || '').trim()
+  const applicationNo = String(query.applicationNo || query.applyNo || query.serialNo || '').trim()
+  const customerName = String(query.customerName || query.linkedCustomerName || '').trim()
+  const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+  const projectName = String(query.projectName || '').trim()
+  const projectNo = String(query.projectNo || '').trim()
+  const relatedBusinessContractNo = String(
+    query.relatedBusinessContractNo || query.businessContractNo || query.contractNo || ''
+  ).trim()
+  const filtered = assetArrivalApplicationRecords.filter((record) => {
+    const matchesPhase = !phase || record.phase === phase
+    const matchesStatus = !status || record.status === status
+    const matchesApplicationNo = !applicationNo || record.applicationNo.includes(applicationNo)
+    const matchesCustomerName = !customerName || record.customerName.includes(customerName)
+    const matchesCoreCustomerNo = !coreCustomerNo || record.coreCustomerNo.includes(coreCustomerNo)
+    const matchesProjectName = !projectName || record.projectName.includes(projectName)
+    const matchesProjectNo = !projectNo || record.projectNo.includes(projectNo)
+    const matchesBusinessContract =
+      !relatedBusinessContractNo || record.relatedBusinessContractNo.includes(relatedBusinessContractNo)
+    return (
+      matchesPhase &&
+      matchesStatus &&
+      matchesApplicationNo &&
+      matchesCustomerName &&
+      matchesCoreCustomerNo &&
+      matchesProjectName &&
+      matchesProjectNo &&
+      matchesBusinessContract
+    )
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
+
+const orderContractModificationPageData = (
+  config: AxiosRequestConfig,
+  node: 'active' | 'records'
+) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || query.pageNum || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const applicationFlowNo = String(
+    query.applicationFlowNo || query.orderContractFlowNo || query.flowNo || ''
+  ).trim()
+  const orderContractNo = String(query.orderContractNo || query.contractNo || '').trim()
+  const customerName = String(query.customerName || '').trim()
+  const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+  const businessContractNo = String(query.businessContractNo || '').trim()
+  const contractStatus = String(query.contractStatus || '').trim()
+  const modificationStatus = String(query.modificationStatus || '').trim()
+  const source = node === 'records' ? orderContractModificationHistoryRecords : orderContractModificationRecords
+  const filtered = source.filter((record) => {
+    const matchesFlowNo = !applicationFlowNo || record.applicationFlowNo.includes(applicationFlowNo)
+    const matchesContractNo = !orderContractNo || record.orderContractNo.includes(orderContractNo)
+    const matchesCustomerName = !customerName || record.customerName.includes(customerName)
+    const matchesCoreCustomerNo = !coreCustomerNo || record.coreCustomerNo.includes(coreCustomerNo)
+    const matchesBusinessContractNo = !businessContractNo || record.businessContractNo.includes(businessContractNo)
+    const matchesContractStatus = !contractStatus || record.contractStatus === contractStatus
+    const matchesModificationStatus = !modificationStatus || record.modificationStatus === modificationStatus
+    return (
+      matchesFlowNo &&
+      matchesContractNo &&
+      matchesCustomerName &&
+      matchesCoreCustomerNo &&
+      matchesBusinessContractNo &&
+      matchesContractStatus &&
+      matchesModificationStatus
+    )
   })
   const start = (pageNo - 1) * pageSize
   const list = cloneMockData(filtered.slice(start, start + pageSize))
@@ -187,13 +399,245 @@ export const mockAdapter: AxiosAdapter = async (config) => {
   } else if (/\/system\/indebt\/inventory-goods\/page$/.test(url)) {
     data = inventoryGoodsPageData(config)
   } else if (/\/system\/indebt\/inventory-goods\/active-list$/.test(url)) {
-    data = cloneMockData(inventoryGoodsRecords.filter((record) => record.status === '启用'))
+    data = cloneMockData(inventoryGoodsRecords.filter((record) => record.status === '有效'))
   } else if (/\/system\/indebt\/inventory-goods\/create$/.test(url)) {
     data = cloneMockData(createInventoryGoodsRecord(parseMockPayload(config.data)))
   } else if (/\/system\/indebt\/inventory-goods\/history$/.test(url)) {
     const payload = parseMockPayload(config.data)
     const ids = Array.isArray(payload.ids) ? payload.ids : []
     data = { updated: markInventoryGoodsHistory(ids) }
+  } else if (/\/system\/indebt\/warehouse-applications\/page$/.test(url)) {
+    data = warehouseApplicationPageData(config)
+  } else if (/\/system\/indebt\/warehouse-applications\/create$/.test(url)) {
+    data = cloneMockData(createWarehouseApplicationRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/indebt\/warehouse-applications\/submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const record = submitWarehouseApplicationRecord(payload.id || payload.applicationId)
+    data = record
+      ? { success: true, record: cloneMockData(record) }
+      : { success: false, message: '仅待提交的仓库建立申请可提交，或该申请不存在' }
+  } else if (/\/system\/indebt\/warehouse-applications\/withdraw$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const record = withdrawWarehouseApplicationRecord(payload.id || payload.applicationId)
+    data = record
+      ? { success: true, record: cloneMockData(record) }
+      : { success: false, message: '仅审查审批中的仓库建立申请可收回，或该申请不存在' }
+  } else if (/\/system\/indebt\/warehouse-applications\/detail$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const record = getWarehouseApplicationRecord(query.id || query.applicationId)
+    data = record
+      ? cloneMockData(record)
+      : { success: false, message: '仓库建立申请不存在' }
+  } else if (/\/system\/indebt\/warehouse-applications\/sign-opinion$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const result = signWarehouseApplicationOpinionRecord(payload.id || payload.applicationId, payload.opinion || payload.content)
+    data = result
+      ? { success: true, record: cloneMockData(result.record), opinion: cloneMockData(result.opinion) }
+      : { success: false, message: '请填写签署意见，并确认仓库建立申请存在' }
+  } else if (/\/system\/indebt\/inventory-price-applications\/page$/.test(url)) {
+    data = inventoryPriceApplicationPageData(config)
+  } else if (/\/system\/indebt\/inventory-price-applications\/available-projects$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const projectNo = String(query.projectNo || '').trim()
+    const projectName = String(query.projectName || '').trim()
+    const coreEnterpriseName = String(query.coreEnterpriseName || '').trim()
+    data = cloneMockData(
+      inventoryPriceAvailableProjects.filter((project) => {
+        const matchesProjectNo = !projectNo || project.projectNo.includes(projectNo)
+        const matchesProjectName = !projectName || project.projectName.includes(projectName)
+        const matchesCoreEnterprise =
+          !coreEnterpriseName || project.coreEnterpriseName.includes(coreEnterpriseName)
+        const hasPendingApplication = inventoryPriceApplicationRecords.some(
+          (record) => record.projectId === project.id && (record.phase === 'pending' || record.phase === 'reviewing')
+        )
+        return matchesProjectNo && matchesProjectName && matchesCoreEnterprise && !hasPendingApplication
+      })
+    )
+  } else if (/\/system\/indebt\/inventory-price-applications\/create$/.test(url)) {
+    data = cloneMockData(createInventoryPriceApplicationRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/indebt\/inventory-price-applications\/update$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(updateInventoryPriceApplicationRecord(payload.id || payload.applicationId, payload))
+  } else if (/\/system\/indebt\/inventory-price-applications\/excel\/upload$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      uploadInventoryPriceExcelRecord(payload.id || payload.applicationId, payload.fileName || payload.name)
+    )
+  } else if (/\/system\/indebt\/inventory-price-applications\/excel\/template$/.test(url)) {
+    data = cloneMockData(getInventoryPriceExcelTemplate())
+  } else if (/\/system\/indebt\/inventory-price-applications\/images$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const record = getInventoryPriceApplicationRecord(query.id || query.applicationId)
+    data = cloneMockData(record?.images || [])
+  } else if (/\/system\/indebt\/inventory-price-applications\/image\/upload$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      uploadInventoryPriceApplicationImage(payload.id || payload.applicationId, payload.fileName || payload.name)
+    )
+  } else if (/\/system\/indebt\/inventory-price-applications\/sign-opinion$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      signInventoryPriceApplicationOpinion(payload.id || payload.applicationId, payload.opinion || payload.content)
+    )
+  } else if (/\/system\/indebt\/inventory-price-applications\/batch-submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const ids = Array.isArray(payload.ids) ? payload.ids : []
+    data = cloneMockData(batchSubmitInventoryPriceApplicationRecords(ids, payload.opinion || payload.content))
+  } else if (/\/system\/indebt\/inventory-price-applications\/submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(submitInventoryPriceApplicationRecord(payload.id || payload.applicationId))
+  } else if (/\/system\/indebt\/inventory-price-applications\/withdraw$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(withdrawInventoryPriceApplicationRecord(payload.id || payload.applicationId))
+  } else if (/\/system\/indebt\/inventory-price-applications\/approve$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      approveInventoryPriceApplicationRecord(payload.id || payload.applicationId, payload.opinion || payload.content)
+    )
+  } else if (/\/system\/indebt\/inventory-price-applications\/trend$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const trend = getInventoryPriceTrendData(query.id || query.applicationId, query.itemId)
+    data = trend ? cloneMockData(trend) : { success: false, message: '价格盯市申请或商品维护行不存在' }
+  } else if (/\/system\/indebt\/inventory-price-applications\/detail$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const record = getInventoryPriceApplicationRecord(query.id || query.applicationId)
+    data = record ? cloneMockData(record) : { success: false, message: '价格盯市申请不存在' }
+  } else if (/\/system\/indebt\/asset-arrival-applications\/page$/.test(url)) {
+    data = assetArrivalApplicationPageData(config)
+  } else if (/\/system\/indebt\/asset-arrival-applications\/available-projects$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const projectName = String(query.projectName || '').trim()
+    const projectNo = String(query.projectNo || '').trim()
+    const customerName = String(query.customerName || query.linkedCustomerName || '').trim()
+    const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+    const businessContractNo = String(query.businessContractNo || query.relatedBusinessContractNo || '').trim()
+    data = cloneMockData(
+      assetArrivalAvailableProjects.filter((project) => {
+        const matchesProjectName = !projectName || project.projectName.includes(projectName)
+        const matchesProjectNo = !projectNo || project.projectNo.includes(projectNo)
+        const matchesCustomerName = !customerName || project.customerName.includes(customerName)
+        const matchesCoreCustomerNo = !coreCustomerNo || project.coreCustomerNo.includes(coreCustomerNo)
+        const matchesBusinessContract = !businessContractNo || project.businessContractNo.includes(businessContractNo)
+        const hasInProgressApplication = assetArrivalApplicationRecords.some(
+          (record) => record.projectId === project.id && (record.phase === 'pending' || record.phase === 'reviewing')
+        )
+        return (
+          project.isEffective &&
+          matchesProjectName &&
+          matchesProjectNo &&
+          matchesCustomerName &&
+          matchesCoreCustomerNo &&
+          matchesBusinessContract &&
+          !hasInProgressApplication
+        )
+      }).map(withAssetArrivalProjectAliases)
+    )
+  } else if (/\/system\/indebt\/asset-arrival-applications\/create$/.test(url)) {
+    data = cloneMockData(createAssetArrivalApplicationRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/indebt\/asset-arrival-applications\/update-confirmation$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(updateAssetArrivalConfirmationRecord(payload.id || payload.applicationId, payload))
+  } else if (/\/system\/indebt\/asset-arrival-applications\/images$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(getAssetArrivalApplicationImages(query.id || query.applicationId) || [])
+  } else if (/\/system\/indebt\/asset-arrival-applications\/image\/upload$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      uploadAssetArrivalApplicationImage(payload.id || payload.applicationId, payload.fileName || payload.name)
+    )
+  } else if (/\/system\/indebt\/asset-arrival-applications\/opinions$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(getAssetArrivalApplicationOpinions(query.id || query.applicationId) || [])
+  } else if (/\/system\/indebt\/asset-arrival-applications\/flow-records$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(getAssetArrivalApplicationFlowRecords(query.id || query.applicationId) || [])
+  } else if (/\/system\/indebt\/asset-arrival-applications\/sign-opinion$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      signAssetArrivalApplicationOpinionRecord(payload.id || payload.applicationId, payload.opinion || payload.content)
+    )
+  } else if (/\/system\/indebt\/asset-arrival-applications\/batch-submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const ids = Array.isArray(payload.ids) ? payload.ids : []
+    data = cloneMockData(batchSubmitAssetArrivalApplicationRecords(ids, payload.opinion || payload.content))
+  } else if (/\/system\/indebt\/asset-arrival-applications\/submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(submitAssetArrivalApplicationRecord(payload.id || payload.applicationId))
+  } else if (/\/system\/indebt\/asset-arrival-applications\/withdraw$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(withdrawAssetArrivalApplicationRecord(payload.id || payload.applicationId))
+  } else if (/\/system\/indebt\/asset-arrival-applications\/approve$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      approveAssetArrivalApplicationRecord(payload.id || payload.applicationId, payload.opinion || payload.content)
+    )
+  } else if (/\/system\/indebt\/asset-arrival-applications\/detail$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const record = getAssetArrivalApplicationRecord(query.id || query.applicationId)
+    data = record ? cloneMockData(record) : { success: false, message: '债项资产到港申请不存在' }
+  } else if (/\/system\/indebt\/order-contract-modifications\/records\/page$/.test(url)) {
+    data = orderContractModificationPageData(config, 'records')
+  } else if (/\/system\/indebt\/order-contract-modifications\/page$/.test(url)) {
+    data = orderContractModificationPageData(config, 'active')
+  } else if (/\/system\/indebt\/order-contract-modifications\/available-contracts$/.test(url)) {
+    data = cloneMockData(
+      availableOrderContractRecords.filter((record) => record.contractStatus === '有效')
+    )
+  } else if (/\/system\/indebt\/order-contract-modifications\/create$/.test(url)) {
+    data = cloneMockData(createOrderContractModificationRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/indebt\/order-contract-modifications\/detail$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const node = query.node === 'records' ? 'records' : 'active'
+    const record = getOrderContractModificationByNode(query.id || query.modificationId, node)
+    data = record ? cloneMockData(record) : { success: false, message: '订单/合同信息修改申请不存在' }
+  } else if (/\/system\/indebt\/order-contract-modifications\/items\/update$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      updateOrderContractModificationItems(payload.modificationId || payload.id, payload.items)
+    )
+  } else if (/\/system\/indebt\/order-contract-modifications\/item\/create$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(createOrderContractModificationItem(payload.modificationId || payload.id, payload))
+  } else if (/\/system\/indebt\/order-contract-modifications\/item\/update$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      updateOrderContractModificationItem(payload.modificationId || payload.id, payload.itemId, payload)
+    )
+  } else if (/\/system\/indebt\/order-contract-modifications\/item\/delete$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      deleteOrderContractModificationItem(payload.modificationId || payload.id, payload.itemId)
+    )
+  } else if (/\/system\/indebt\/order-contract-modifications\/images$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const node = query.node === 'records' ? 'records' : 'active'
+    data = cloneMockData(getOrderContractModificationImages(query.modificationId || query.id, node) || [])
+  } else if (/\/system\/indebt\/order-contract-modifications\/image\/upload$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      uploadOrderContractModificationImage(payload.modificationId || payload.id, payload.name || payload.fileName)
+    )
+  } else if (/\/system\/indebt\/order-contract-modifications\/sign-opinion$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      signOrderContractModificationOpinion(payload.id || payload.modificationId, payload.opinion || payload.content)
+    )
+  } else if (/\/system\/indebt\/order-contract-modifications\/batch-submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const ids = Array.isArray(payload.ids) ? payload.ids : []
+    data = cloneMockData(batchSubmitOrderContractModificationRecords(ids, payload.opinion || payload.content))
+  } else if (/\/system\/indebt\/order-contract-modifications\/submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(submitOrderContractModificationRecord(payload.id || payload.modificationId))
+  } else if (/\/system\/indebt\/order-contract-modifications\/invalidate$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(invalidateOrderContractModificationRecord(payload.id || payload.modificationId))
+  } else if (/\/system\/indebt\/order-contract-modifications\/delete$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(deleteOrderContractModificationRecord(payload.id || payload.modificationId))
+  } else if (/\/system\/indebt\/order-contract-modifications\/update$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(updateOrderContractModificationRecord(payload.id || payload.modificationId, payload))
   } else if (/captcha\/(get|check)$/.test(url)) {
     data = { repCode: '0000', repMsg: '校验成功', uuid: 'mock-captcha', captchaType: 'blockPuzzle' }
   } else if (/auth\/logout|\/create$|\/update$|\/delete$|\/save|\/submit|\/cancel|\/approve|\/reject|\/withdraw|\/add$|\/edit$|\/upload/i.test(url)) {

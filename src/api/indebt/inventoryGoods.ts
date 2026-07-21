@@ -9,18 +9,25 @@ export interface InventoryGoodsQuery {
 }
 
 export interface InventoryGoodsForm {
-  largeCategoryCode: string
   largeCategoryName: string
-  middleCategoryCode: string
   middleCategoryName: string
-  smallCategoryCode: string
   smallCategoryName: string
   remark?: string
 }
 
+export type InventoryGoodsCreateMode = 'direct' | 'based'
+
+export interface InventoryGoodsCreatePayload extends InventoryGoodsForm {
+  createMode: InventoryGoodsCreateMode
+  sourceId?: number
+}
+
 export interface InventoryGoodsRecord extends InventoryGoodsForm {
   id: number
-  status: '启用' | '历史'
+  largeCategoryCode: string
+  middleCategoryCode: string
+  smallCategoryCode: string
+  status: '有效' | '历史'
   maintainTime: string
   maintainer: string
 }
@@ -36,12 +43,19 @@ export interface InventoryGoodsPageResult {
 export const getInventoryGoodsPage = (params: InventoryGoodsQuery) =>
   request.get<InventoryGoodsPageResult>({ url: '/system/indebt/inventory-goods/page', params })
 
-/** 获取所有启用状态的商品分类，供品类思维导图使用，不受列表分页和筛选影响。 */
+/** 获取所有有效状态的商品分类，供品类思维导图使用，不受列表分页和筛选影响。 */
 export const getActiveInventoryGoods = () =>
   request.get<InventoryGoodsRecord[]>({ url: '/system/indebt/inventory-goods/active-list' })
 
-export const createInventoryGoods = (data: InventoryGoodsForm) =>
-  request.post<InventoryGoodsRecord>({ url: '/system/indebt/inventory-goods/create', data })
+export interface InventoryGoodsCreateResult {
+  success: boolean
+  message?: string
+  duplicateLevel?: 'large' | 'middle' | 'small'
+  record?: InventoryGoodsRecord
+}
+
+export const createInventoryGoods = (data: InventoryGoodsCreatePayload) =>
+  request.post<InventoryGoodsCreateResult>({ url: '/system/indebt/inventory-goods/create', data })
 
 export const setInventoryGoodsHistory = (ids: number[]) =>
   request.put<{ updated: number }>({ url: '/system/indebt/inventory-goods/history', data: { ids } })

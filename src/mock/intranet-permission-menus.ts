@@ -1154,6 +1154,58 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
         "keepAlive": true,
         "alwaysShow": true,
         "children": null
+      },
+      {
+        "id": 1727,
+        "parentId": 1239,
+        "name": "仓库管理",
+        "path": "warehouseManagement",
+        "component": "indebt/warehouseManagement/index",
+        "componentName": "WarehouseManagement",
+        "icon": null,
+        "visible": true,
+        "keepAlive": true,
+        "alwaysShow": true,
+        "children": null
+      },
+      {
+        "id": 1728,
+        "parentId": 1239,
+        "name": "订单/合同信息修改",
+        "path": "orderContractModification",
+        "component": "indebt/orderContractModification/index",
+        "componentName": "OrderContractModification",
+        "icon": null,
+        "visible": true,
+        "keepAlive": true,
+        "alwaysShow": true,
+        "children": null
+      },
+      {
+        "id": 1729,
+        "parentId": 1239,
+        "name": "存货类价格管理",
+        "path": "inventoryPriceManagement",
+        "component": "indebt/inventoryPriceManagement/index",
+        "componentName": "InventoryPriceManagement",
+        "icon": null,
+        "visible": true,
+        "keepAlive": true,
+        "alwaysShow": true,
+        "children": null
+      },
+      {
+        "id": 1730,
+        "parentId": 1239,
+        "name": "债项资产到港管理",
+        "path": "assetArrivalManagement",
+        "component": "indebt/assetArrivalManagement/index",
+        "componentName": "AssetArrivalManagement",
+        "icon": null,
+        "visible": true,
+        "keepAlive": true,
+        "alwaysShow": true,
+        "children": null
       }
     ]
   },
