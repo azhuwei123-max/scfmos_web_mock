@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onActivated, reactive, ref, watch } from 'vue'
+import { computed, onActivated, onMounted, reactive, ref, unref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ActionBar, type ActionButton } from '@/components/ActionBar'
 import { useCrudSchemas, type CrudSchema } from '@/hooks/web/useCrudSchemas'
@@ -163,7 +163,10 @@ type LedgerProject = OrderContractLedgerApi.OrderContractLedgerProject
 type LedgerAssetItem = OrderContractLedgerApi.OrderContractLedgerAssetItem
 
 const props = defineProps<{ params?: { productPlan?: string } }>()
-const currentProductPlan = computed(() => props.params?.productPlan || '先票/款后货')
+const currentProductPlan = computed(() => {
+  const productPlan = unref(props.params?.productPlan)
+  return typeof productPlan === 'string' && productPlan ? productPlan : '先票/款后货'
+})
 
 const projectRows = ref<LedgerProject[]>([])
 const projectLoading = ref(false)
@@ -375,6 +378,10 @@ watch(currentProductPlan, () => {
 })
 
 onActivated(() => {
+  loadProjects()
+})
+
+onMounted(() => {
   loadProjects()
 })
 </script>

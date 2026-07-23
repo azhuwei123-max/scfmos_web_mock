@@ -947,6 +947,7 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     const projectName = String(query.projectName || '').trim()
     const coreEnterpriseName = String(query.coreEnterpriseName || '').trim()
     const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+    const productPlan = String(query.productPlan || '').trim()
     data = cloneMockData(
       orderContractLedgerProjects.filter((project) => {
         const matchesProjectNo = !projectNo || project.projectNo.includes(projectNo)
@@ -954,7 +955,14 @@ export const mockAdapter: AxiosAdapter = async (config) => {
         const matchesCoreEnterprise =
           !coreEnterpriseName || project.coreEnterpriseName.includes(coreEnterpriseName)
         const matchesCoreCustomer = !coreCustomerNo || project.coreCustomerNo.includes(coreCustomerNo)
-        return matchesProjectNo && matchesProjectName && matchesCoreEnterprise && matchesCoreCustomer
+        const matchesProductPlan = !productPlan || project.productPlan === productPlan
+        return (
+          matchesProjectNo &&
+          matchesProjectName &&
+          matchesCoreEnterprise &&
+          matchesCoreCustomer &&
+          matchesProductPlan
+        )
       })
     )
   } else if (/\/system\/indebt\/order-contract-ledgers\/page$/.test(url)) {
