@@ -1244,6 +1244,32 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
             "keepAlive": true,
             "alwaysShow": true,
             "children": null
+          },
+          {
+            "id": 1734,
+            "parentId": 1731,
+            "name": "债项资产出库申请",
+            "path": "assetManagement/outboundApplication",
+            "component": "indebt/assetOutboundManagement/index",
+            "componentName": "AssetOutboundManagementOutboundApplication",
+            "icon": null,
+            "visible": true,
+            "keepAlive": true,
+            "alwaysShow": true,
+            "children": null
+          },
+          {
+            "id": 1735,
+            "parentId": 1731,
+            "name": "债项资产出库审批",
+            "path": "assetManagement/outboundApproval",
+            "component": "indebt/assetOutboundManagement/index",
+            "componentName": "AssetOutboundManagementOutboundApproval",
+            "icon": null,
+            "visible": true,
+            "keepAlive": true,
+            "alwaysShow": true,
+            "children": null
           }
         ]
       }
