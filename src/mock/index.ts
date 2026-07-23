@@ -48,6 +48,23 @@ import {
   withdrawAssetArrivalApplicationRecord
 } from './asset-arrival-management'
 import {
+  approveAssetManagementApplicationRecord,
+  assetManagementApplicationRecords,
+  assetManagementAvailableProjects,
+  batchSubmitAssetManagementApplicationRecords,
+  createAssetManagementApplicationRecord,
+  getAssetManagementApplicationFlowRecords,
+  getAssetManagementApplicationImages,
+  getAssetManagementApplicationOpinions,
+  getAssetManagementApplicationRecord,
+  signAssetManagementApplicationOpinionRecord,
+  submitAssetManagementApplicationRecord,
+  updateAssetManagementConfirmationRecord,
+  uploadAssetManagementApplicationImage,
+  withAssetManagementProjectAliases,
+  withdrawAssetManagementApplicationRecord
+} from './asset-management'
+import {
   batchSubmitOrderContractModificationRecords,
   createOrderContractModificationItem,
   createOrderContractModificationRecord,
@@ -233,6 +250,46 @@ const assetArrivalApplicationPageData = (config: AxiosRequestConfig) => {
     query.relatedBusinessContractNo || query.businessContractNo || query.contractNo || ''
   ).trim()
   const filtered = assetArrivalApplicationRecords.filter((record) => {
+    const matchesPhase = !phase || record.phase === phase
+    const matchesStatus = !status || record.status === status
+    const matchesApplicationNo = !applicationNo || record.applicationNo.includes(applicationNo)
+    const matchesCustomerName = !customerName || record.customerName.includes(customerName)
+    const matchesCoreCustomerNo = !coreCustomerNo || record.coreCustomerNo.includes(coreCustomerNo)
+    const matchesProjectName = !projectName || record.projectName.includes(projectName)
+    const matchesProjectNo = !projectNo || record.projectNo.includes(projectNo)
+    const matchesBusinessContract =
+      !relatedBusinessContractNo || record.relatedBusinessContractNo.includes(relatedBusinessContractNo)
+    return (
+      matchesPhase &&
+      matchesStatus &&
+      matchesApplicationNo &&
+      matchesCustomerName &&
+      matchesCoreCustomerNo &&
+      matchesProjectName &&
+      matchesProjectNo &&
+      matchesBusinessContract
+    )
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
+
+const assetManagementApplicationPageData = (config: AxiosRequestConfig) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || query.pageNum || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const phase = String(query.phase || '').trim()
+  const status = String(query.status || query.applicationStatus || '').trim()
+  const applicationNo = String(query.applicationNo || query.applyNo || query.serialNo || '').trim()
+  const customerName = String(query.customerName || query.linkedCustomerName || '').trim()
+  const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+  const projectName = String(query.projectName || '').trim()
+  const projectNo = String(query.projectNo || '').trim()
+  const relatedBusinessContractNo = String(
+    query.relatedBusinessContractNo || query.businessContractNo || query.contractNo || ''
+  ).trim()
+  const filtered = assetManagementApplicationRecords.filter((record) => {
     const matchesPhase = !phase || record.phase === phase
     const matchesStatus = !status || record.status === status
     const matchesApplicationNo = !applicationNo || record.applicationNo.includes(applicationNo)
@@ -575,6 +632,79 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     const query = { ...urlQuery(config.url), ...(config.params || {}) }
     const record = getAssetArrivalApplicationRecord(query.id || query.applicationId)
     data = record ? cloneMockData(record) : { success: false, message: '债项资产到港申请不存在' }
+  } else if (/\/system\/indebt\/asset-management-applications\/page$/.test(url)) {
+    data = assetManagementApplicationPageData(config)
+  } else if (/\/system\/indebt\/asset-management-applications\/available-projects$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const projectName = String(query.projectName || '').trim()
+    const projectNo = String(query.projectNo || '').trim()
+    const customerName = String(query.customerName || query.linkedCustomerName || '').trim()
+    const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+    const businessContractNo = String(query.businessContractNo || query.relatedBusinessContractNo || '').trim()
+    data = cloneMockData(
+      assetManagementAvailableProjects.filter((project) => {
+        const matchesProjectName = !projectName || project.projectName.includes(projectName)
+        const matchesProjectNo = !projectNo || project.projectNo.includes(projectNo)
+        const matchesCustomerName = !customerName || project.customerName.includes(customerName)
+        const matchesCoreCustomerNo = !coreCustomerNo || project.coreCustomerNo.includes(coreCustomerNo)
+        const matchesBusinessContract = !businessContractNo || project.businessContractNo.includes(businessContractNo)
+        const hasInProgressApplication = assetManagementApplicationRecords.some(
+          (record) => record.projectId === project.id && (record.phase === 'pending' || record.phase === 'reviewing')
+        )
+        return (
+          project.isEffective &&
+          matchesProjectName &&
+          matchesProjectNo &&
+          matchesCustomerName &&
+          matchesCoreCustomerNo &&
+          matchesBusinessContract &&
+          !hasInProgressApplication
+        )
+      }).map(withAssetManagementProjectAliases)
+    )
+  } else if (/\/system\/indebt\/asset-management-applications\/create$/.test(url)) {
+    data = cloneMockData(createAssetManagementApplicationRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/indebt\/asset-management-applications\/update-confirmation$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(updateAssetManagementConfirmationRecord(payload.id || payload.applicationId, payload))
+  } else if (/\/system\/indebt\/asset-management-applications\/images$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(getAssetManagementApplicationImages(query.id || query.applicationId) || [])
+  } else if (/\/system\/indebt\/asset-management-applications\/image\/upload$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      uploadAssetManagementApplicationImage(payload.id || payload.applicationId, payload.fileName || payload.name)
+    )
+  } else if (/\/system\/indebt\/asset-management-applications\/opinions$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(getAssetManagementApplicationOpinions(query.id || query.applicationId) || [])
+  } else if (/\/system\/indebt\/asset-management-applications\/flow-records$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(getAssetManagementApplicationFlowRecords(query.id || query.applicationId) || [])
+  } else if (/\/system\/indebt\/asset-management-applications\/sign-opinion$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      signAssetManagementApplicationOpinionRecord(payload.id || payload.applicationId, payload.opinion || payload.content)
+    )
+  } else if (/\/system\/indebt\/asset-management-applications\/batch-submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const ids = Array.isArray(payload.ids) ? payload.ids : []
+    data = cloneMockData(batchSubmitAssetManagementApplicationRecords(ids, payload.opinion || payload.content))
+  } else if (/\/system\/indebt\/asset-management-applications\/submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(submitAssetManagementApplicationRecord(payload.id || payload.applicationId))
+  } else if (/\/system\/indebt\/asset-management-applications\/withdraw$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(withdrawAssetManagementApplicationRecord(payload.id || payload.applicationId))
+  } else if (/\/system\/indebt\/asset-management-applications\/approve$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = cloneMockData(
+      approveAssetManagementApplicationRecord(payload.id || payload.applicationId, payload.opinion || payload.content)
+    )
+  } else if (/\/system\/indebt\/asset-management-applications\/detail$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const record = getAssetManagementApplicationRecord(query.id || query.applicationId)
+    data = record ? cloneMockData(record) : { success: false, message: '债项资产入库申请不存在' }
   } else if (/\/system\/indebt\/order-contract-modifications\/records\/page$/.test(url)) {
     data = orderContractModificationPageData(config, 'records')
   } else if (/\/system\/indebt\/order-contract-modifications\/page$/.test(url)) {
