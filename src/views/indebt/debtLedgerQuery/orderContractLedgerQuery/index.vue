@@ -1,25 +1,15 @@
 <template>
-  <dynamicContainer
-    :active-menu="activeMenu"
-    :comp-modules="modules"
-    :menu-list="orderContractLedgerMenus"
-    :menu-select="handleMenuSelect"
-  />
+  <OrderContractLedgerWorkList :params="{ productPlan }" />
 </template>
 
 <script setup lang="ts">
-import dynamicContainer from '@/components/dynamicContainer/index.vue'
-import { orderContractLedgerMenus } from './common'
+import OrderContractLedgerWorkList from './components/workList/index.vue'
 
 defineOptions({ name: 'OrderContractLedgerQuery' })
 
 const route = useRoute()
-const routeDefaultMenu = computed(() => {
+const productPlan = computed(() => {
   const path = String(route.path || '')
-  return path.includes('/pledge') ? 'pledge' : 'prepayment'
+  return path.includes('/pledge') ? '货押融资' : '先票/款后货'
 })
-const activeMenu = computed(() => String(route.query?.key || routeDefaultMenu.value))
-const modules = import.meta.glob('./components/*/index.vue')
-
-const handleMenuSelect = (menu: { productPlan: string }) => ({ productPlan: menu.productPlan })
 </script>
