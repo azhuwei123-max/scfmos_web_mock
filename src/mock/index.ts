@@ -101,6 +101,14 @@ import {
   uploadOrderContractModificationImage,
   availableOrderContractRecords
 } from './order-contract-modification'
+import {
+  createOfflineLedgerApplicationRecord,
+  getOfflineLedgerApplicationRecord,
+  offlineLedgerApplicationRecords,
+  signOfflineLedgerApplicationOpinionRecord,
+  submitOfflineLedgerApplicationRecord,
+  withdrawOfflineLedgerApplicationRecord
+} from './offline-ledger-update'
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const urlPath = (url = '') => url.split('?')[0].replace(/^https?:\/\/[^/]+/, '')
@@ -365,6 +373,41 @@ const assetOutboundManagementApplicationPageData = (config: AxiosRequestConfig) 
       matchesProjectName &&
       matchesProjectNo &&
       matchesBusinessContract
+    )
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
+
+const offlineLedgerUpdatePageData = (config: AxiosRequestConfig) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || query.pageNum || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const phase = String(query.phase || '').trim()
+  const applicationNo = String(query.applicationNo || query.applyNo || '').trim()
+  const projectNo = String(query.projectNo || '').trim()
+  const projectName = String(query.projectName || '').trim()
+  const coreEnterpriseName = String(query.coreEnterpriseName || '').trim()
+  const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+  const productPlan = String(query.productPlan || '').trim()
+  const filtered = offlineLedgerApplicationRecords.filter((record) => {
+    const matchesPhase = !phase || record.phase === phase
+    const matchesApplicationNo = !applicationNo || record.applicationNo.includes(applicationNo)
+    const matchesProjectNo = !projectNo || record.projectNo.includes(projectNo)
+    const matchesProjectName = !projectName || record.projectName.includes(projectName)
+    const matchesCoreEnterprise =
+      !coreEnterpriseName || record.coreEnterpriseName.includes(coreEnterpriseName)
+    const matchesCoreCustomerNo = !coreCustomerNo || record.coreCustomerNo.includes(coreCustomerNo)
+    const matchesProductPlan = !productPlan || record.productPlan === productPlan
+    return (
+      matchesPhase &&
+      matchesApplicationNo &&
+      matchesProjectNo &&
+      matchesProjectName &&
+      matchesCoreEnterprise &&
+      matchesCoreCustomerNo &&
+      matchesProductPlan
     )
   })
   const start = (pageNo - 1) * pageSize
@@ -835,6 +878,32 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     const query = { ...urlQuery(config.url), ...(config.params || {}) }
     const record = getAssetOutboundManagementApplicationRecord(query.id || query.applicationId)
     data = record ? cloneMockData(record) : { success: false, message: '债项资产出库申请不存在' }
+  } else if (/\/system\/indebt\/offline-ledger-updates\/page$/.test(url)) {
+    data = offlineLedgerUpdatePageData(config)
+  } else if (/\/system\/indebt\/offline-ledger-updates\/create$/.test(url)) {
+    data = cloneMockData(createOfflineLedgerApplicationRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/indebt\/offline-ledger-updates\/submit$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const record = submitOfflineLedgerApplicationRecord(payload.id || payload.applicationId)
+    data = record
+      ? { success: true, record: cloneMockData(record) }
+      : { success: false, message: '仅待提交的线下台账更新申请可提交，或该申请不存在' }
+  } else if (/\/system\/indebt\/offline-ledger-updates\/withdraw$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const record = withdrawOfflineLedgerApplicationRecord(payload.id || payload.applicationId)
+    data = record
+      ? { success: true, record: cloneMockData(record) }
+      : { success: false, message: '仅审查审批中的线下台账更新申请可收回，或该申请不存在' }
+  } else if (/\/system\/indebt\/offline-ledger-updates\/detail$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const record = getOfflineLedgerApplicationRecord(query.id || query.applicationId)
+    data = record ? cloneMockData(record) : { success: false, message: '线下台账更新申请不存在' }
+  } else if (/\/system\/indebt\/offline-ledger-updates\/sign-opinion$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    const result = signOfflineLedgerApplicationOpinionRecord(payload.id || payload.applicationId, payload.opinion || payload.content)
+    data = result
+      ? { success: true, record: cloneMockData(result.record), opinion: cloneMockData(result.opinion) }
+      : { success: false, message: '请填写签署意见，并确认线下台账更新申请存在' }
   } else if (/\/system\/indebt\/order-contract-modifications\/records\/page$/.test(url)) {
     data = orderContractModificationPageData(config, 'records')
   } else if (/\/system\/indebt\/order-contract-modifications\/page$/.test(url)) {

@@ -1272,6 +1272,33 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
             "children": null
           }
         ]
+      },
+      {
+        "id": 1736,
+        "parentId": 1239,
+        "name": "债项台账查询",
+        "path": "debtLedgerQuery",
+        "component": null,
+        "componentName": null,
+        "icon": null,
+        "visible": true,
+        "keepAlive": true,
+        "alwaysShow": true,
+        "children": [
+          {
+            "id": 1737,
+            "parentId": 1736,
+            "name": "线下台账更新申请",
+            "path": "debtLedgerQuery/offlineLedgerUpdate",
+            "component": "indebt/debtLedgerQuery/offlineLedgerUpdate/index",
+            "componentName": "OfflineLedgerUpdate",
+            "icon": null,
+            "visible": true,
+            "keepAlive": true,
+            "alwaysShow": true,
+            "children": null
+          }
+        ]
       }
     ]
   },
