@@ -14,8 +14,12 @@ import { orderContractLedgerMenus } from './common'
 defineOptions({ name: 'OrderContractLedgerQuery' })
 
 const route = useRoute()
-const activeMenu = computed(() => String(route.query?.key || 'valid'))
+const routeDefaultMenu = computed(() => {
+  const path = String(route.path || '')
+  return path.includes('/pledge') ? 'pledge' : 'prepayment'
+})
+const activeMenu = computed(() => String(route.query?.key || routeDefaultMenu.value))
 const modules = import.meta.glob('./components/*/index.vue')
 
-const handleMenuSelect = (menu: { status: string }) => ({ status: menu.status })
+const handleMenuSelect = (menu: { productPlan: string }) => ({ productPlan: menu.productPlan })
 </script>

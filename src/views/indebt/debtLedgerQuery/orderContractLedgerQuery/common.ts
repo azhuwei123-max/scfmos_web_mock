@@ -1,20 +1,20 @@
 export const orderContractLedgerMenus = [
   {
-    key: 'valid',
+    key: 'prepayment',
     value: './components/workList/index.vue',
-    title: '有效的订单/合同',
+    title: '先票/款后货',
     isLeaf: true,
-    id: 'valid',
+    id: 'prepayment',
     children: null,
-    status: 'valid'
+    productPlan: '先票/款后货'
   },
   {
-    key: 'invalid',
+    key: 'pledge',
     value: './components/workList/index.vue',
-    title: '失效的订单/合同',
+    title: '货押融资',
     isLeaf: true,
-    id: 'invalid',
+    id: 'pledge',
     children: null,
-    status: 'invalid'
+    productPlan: '货押融资'
   }
 ]
