@@ -109,6 +109,12 @@ import {
   submitOfflineLedgerApplicationRecord,
   withdrawOfflineLedgerApplicationRecord
 } from './offline-ledger-update'
+import {
+  getOrderContractLedgerAssetItems,
+  getOrderContractLedgerRecord,
+  orderContractLedgerProjects,
+  orderContractLedgerRecords
+} from './order-contract-ledger-query'
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const urlPath = (url = '') => url.split('?')[0].replace(/^https?:\/\/[^/]+/, '')
@@ -408,6 +414,37 @@ const offlineLedgerUpdatePageData = (config: AxiosRequestConfig) => {
       matchesCoreEnterprise &&
       matchesCoreCustomerNo &&
       matchesProductPlan
+    )
+  })
+  const start = (pageNo - 1) * pageSize
+  const list = cloneMockData(filtered.slice(start, start + pageSize))
+  return { total: filtered.length, list, records: list, pageNo, pageSize }
+}
+
+const orderContractLedgerPageData = (config: AxiosRequestConfig) => {
+  const query = { ...urlQuery(config.url), ...(config.params || {}) }
+  const pageNo = Math.max(1, Number(query.pageNo || query.pageNum || 1))
+  const pageSize = Math.max(1, Number(query.pageSize || 20))
+  const status = String(query.status || 'valid').trim()
+  const projectId = Number(query.projectId || 0)
+  const customerName = String(query.customerName || '').trim()
+  const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+  const relatedBusinessContractNo = String(
+    query.relatedBusinessContractNo || query.businessContractNo || query.contractNo || ''
+  ).trim()
+  const filtered = orderContractLedgerRecords.filter((record) => {
+    const matchesStatus = !status || record.status === status
+    const matchesProject = !projectId || record.projectId === projectId
+    const matchesCustomerName = !customerName || record.customerName.includes(customerName)
+    const matchesCoreCustomerNo = !coreCustomerNo || record.coreCustomerNo.includes(coreCustomerNo)
+    const matchesBusinessContract =
+      !relatedBusinessContractNo || record.relatedBusinessContractNo.includes(relatedBusinessContractNo)
+    return (
+      matchesStatus &&
+      matchesProject &&
+      matchesCustomerName &&
+      matchesCoreCustomerNo &&
+      matchesBusinessContract
     )
   })
   const start = (pageNo - 1) * pageSize
@@ -904,6 +941,31 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     data = result
       ? { success: true, record: cloneMockData(result.record), opinion: cloneMockData(result.opinion) }
       : { success: false, message: '请填写签署意见，并确认线下台账更新申请存在' }
+  } else if (/\/system\/indebt\/order-contract-ledgers\/projects$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const projectNo = String(query.projectNo || '').trim()
+    const projectName = String(query.projectName || '').trim()
+    const coreEnterpriseName = String(query.coreEnterpriseName || '').trim()
+    const coreCustomerNo = String(query.coreCustomerNo || query.customerNo || '').trim()
+    data = cloneMockData(
+      orderContractLedgerProjects.filter((project) => {
+        const matchesProjectNo = !projectNo || project.projectNo.includes(projectNo)
+        const matchesProjectName = !projectName || project.projectName.includes(projectName)
+        const matchesCoreEnterprise =
+          !coreEnterpriseName || project.coreEnterpriseName.includes(coreEnterpriseName)
+        const matchesCoreCustomer = !coreCustomerNo || project.coreCustomerNo.includes(coreCustomerNo)
+        return matchesProjectNo && matchesProjectName && matchesCoreEnterprise && matchesCoreCustomer
+      })
+    )
+  } else if (/\/system\/indebt\/order-contract-ledgers\/page$/.test(url)) {
+    data = orderContractLedgerPageData(config)
+  } else if (/\/system\/indebt\/order-contract-ledgers\/asset-items$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(getOrderContractLedgerAssetItems(query.id || query.ledgerId))
+  } else if (/\/system\/indebt\/order-contract-ledgers\/detail$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const record = getOrderContractLedgerRecord(query.id || query.ledgerId)
+    data = record ? cloneMockData(record) : { success: false, message: '订单/合同台账不存在' }
   } else if (/\/system\/indebt\/order-contract-modifications\/records\/page$/.test(url)) {
     data = orderContractModificationPageData(config, 'records')
   } else if (/\/system\/indebt\/order-contract-modifications\/page$/.test(url)) {

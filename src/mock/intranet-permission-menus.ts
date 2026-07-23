@@ -1297,6 +1297,19 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
             "keepAlive": true,
             "alwaysShow": true,
             "children": null
+          },
+          {
+            "id": 1738,
+            "parentId": 1736,
+            "name": "订单/合同台账查询",
+            "path": "debtLedgerQuery/orderContractLedgerQuery",
+            "component": "indebt/debtLedgerQuery/orderContractLedgerQuery/index",
+            "componentName": "OrderContractLedgerQuery",
+            "icon": null,
+            "visible": true,
+            "keepAlive": true,
+            "alwaysShow": true,
+            "children": null
           }
         ]
       }
