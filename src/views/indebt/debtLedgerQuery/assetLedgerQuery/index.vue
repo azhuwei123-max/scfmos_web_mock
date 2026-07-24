@@ -50,8 +50,10 @@
           <el-tag type="info" effect="plain">共 {{ assetRows.length }} 条</el-tag>
         </div>
         <Search
-          :schema="assetSchemas.searchSchema"
+          :schema="assetSearchSchemas"
           :model="assetQuery"
+          :is-col="true"
+          layout="inline"
           :default-expand="false"
           @search="handleAssetSearch"
           @reset="handleAssetSearch"
@@ -165,6 +167,12 @@ const assetCrudSchemas = reactive<CrudSchema[]>([
 const { allSchemas: projectSchemas } = useCrudSchemas(projectCrudSchemas)
 const { allSchemas: assetSchemas } = useCrudSchemas(assetCrudSchemas)
 const assetColumns = computed(() => assetSchemas.tableColumns)
+const assetSearchSchemas = computed(() =>
+  assetSchemas.searchSchema.map((schema) => ({
+    ...schema,
+    colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8 }
+  }))
+)
 const statusMenus = computed(() => {
   const base = [{ key: 'inStock' as const, label: '在库的债项资产明细' }, { key: 'pendingInbound' as const, label: '待入库债项资产明细' }, { key: 'outbound' as const, label: '已出库的债项资产明细' }, { key: 'invalid' as const, label: '失效的债项资产明细' }]
   return currentProductPlan.value === '货押融资' ? base.filter((item) => item.key !== 'pendingInbound') : base
