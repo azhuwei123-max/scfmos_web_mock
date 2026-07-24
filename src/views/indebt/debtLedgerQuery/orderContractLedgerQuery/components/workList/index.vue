@@ -1,5 +1,5 @@
 <template>
-  <ContentWrap class="order-contract-ledger-query">
+  <ContentWrap v-if="!detailVisible" class="order-contract-ledger-query">
     <Search
       :schema="projectSchemas.searchSchema"
       :model="projectQuery"
@@ -23,12 +23,18 @@
     </Table>
   </ContentWrap>
 
-  <el-dialog
-    v-model="detailVisible"
-    :title="`${detailProject?.projectName || ''} - 订单/合同台账查询`"
-    width="1120px"
-    destroy-on-close
-  >
+  <ContentWrap v-else class="order-contract-ledger-detail-page">
+    <div class="detail-page-header">
+      <el-button class="back-button" link @click="goBackToProjects">
+        <Icon icon="ep:arrow-left" class="mr-4px" />返回项目列表
+      </el-button>
+      <div class="detail-page-title">
+        <span>{{ detailProject?.projectName }}</span>
+        <el-tag type="info" effect="plain">{{ currentProductPlan }}</el-tag>
+      </div>
+      <div class="detail-page-subtitle">订单/合同台账查询</div>
+    </div>
+
     <el-descriptions v-if="detailProject" :column="4" border class="mb-12px">
       <el-descriptions-item label="项目编号">{{ detailProject.projectNo }}</el-descriptions-item>
       <el-descriptions-item label="项目名称">{{ detailProject.projectName }}</el-descriptions-item>
@@ -72,7 +78,7 @@
         </el-button>
       </template>
     </Table>
-  </el-dialog>
+  </ContentWrap>
 
   <el-dialog v-model="ledgerDetailVisible" title="订单/合同台账详情" width="980px" destroy-on-close>
     <el-descriptions v-if="ledgerDetailRecord" :column="3" border>
@@ -309,6 +315,12 @@ const openProjectDetail = async (project: LedgerProject) => {
   await loadLedgerRows()
 }
 
+const goBackToProjects = () => {
+  detailVisible.value = false
+  detailProject.value = undefined
+  ledgerRows.value = []
+}
+
 const loadLedgerRows = async () => {
   if (!detailProject.value) return
   ledgerLoading.value = true
@@ -389,6 +401,41 @@ onMounted(() => {
 <style scoped lang="scss">
 .order-contract-ledger-query {
   min-width: 0;
+}
+
+.order-contract-ledger-detail-page {
+  min-width: 0;
+  min-height: calc(100vh - 150px);
+}
+
+.detail-page-header {
+  display: flex;
+  align-items: center;
+  min-height: 54px;
+  margin: -4px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+
+  .back-button {
+    margin-right: 24px;
+    color: var(--el-color-primary);
+    font-size: 14px;
+  }
+}
+
+.detail-page-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--el-text-color-primary);
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.detail-page-subtitle {
+  margin-left: 14px;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
 }
 
 .image-file-list {
