@@ -115,6 +115,7 @@ import {
   orderContractLedgerProjects,
   orderContractLedgerRecords
 } from './order-contract-ledger-query'
+import { assetLedgerProjects, assetLedgerRecords } from './asset-ledger-query'
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const urlPath = (url = '') => url.split('?')[0].replace(/^https?:\/\/[^/]+/, '')
@@ -974,6 +975,38 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     const query = { ...urlQuery(config.url), ...(config.params || {}) }
     const record = getOrderContractLedgerRecord(query.id || query.ledgerId)
     data = record ? cloneMockData(record) : { success: false, message: '订单/合同台账不存在' }
+  } else if (/\/system\/indebt\/asset-ledgers\/projects$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const productPlan = String(query.productPlan || '').trim()
+    const projectNo = String(query.projectNo || '').trim()
+    const projectName = String(query.projectName || '').trim()
+    const coreEnterpriseName = String(query.coreEnterpriseName || '').trim()
+    const coreCustomerNo = String(query.coreCustomerNo || '').trim()
+    data = cloneMockData(
+      assetLedgerProjects.filter((project) =>
+        (!productPlan || project.productPlan === productPlan) &&
+        (!projectNo || project.projectNo.includes(projectNo)) &&
+        (!projectName || project.projectName.includes(projectName)) &&
+        (!coreEnterpriseName || project.coreEnterpriseName.includes(coreEnterpriseName)) &&
+        (!coreCustomerNo || project.coreCustomerNo.includes(coreCustomerNo))
+      )
+    )
+  } else if (/\/system\/indebt\/asset-ledgers\/page$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const keyword = (field: keyof typeof query) => String(query[field] || '').trim()
+    const list = assetLedgerRecords.filter((record) =>
+      (!query.projectId || Number(query.projectId) === record.projectId) &&
+      (!query.status || query.status === record.status) &&
+      (!query.productPlan || assetLedgerProjects.find((p) => p.id === record.projectId)?.productPlan === query.productPlan) &&
+      (!keyword('customerName') || record.customerName.includes(keyword('customerName'))) &&
+      (!keyword('coreCustomerNo') || record.coreCustomerNo.includes(keyword('coreCustomerNo'))) &&
+      (!keyword('relatedBusinessContractNo') || record.relatedBusinessContractNo.includes(keyword('relatedBusinessContractNo'))) &&
+      (!keyword('productCode') || record.productCode.includes(keyword('productCode'))) &&
+      (!keyword('productName') || record.productName.includes(keyword('productName'))) &&
+      (!keyword('orderContractNo') || record.orderContractNo.includes(keyword('orderContractNo'))) &&
+      (!keyword('orderContractFlowNo') || record.orderContractFlowNo.includes(keyword('orderContractFlowNo')))
+    )
+    data = cloneMockData({ total: list.length, list, records: list, pageNo: 1, pageSize: list.length || 10 })
   } else if (/\/system\/indebt\/order-contract-modifications\/records\/page$/.test(url)) {
     data = orderContractModificationPageData(config, 'records')
   } else if (/\/system\/indebt\/order-contract-modifications\/page$/.test(url)) {
