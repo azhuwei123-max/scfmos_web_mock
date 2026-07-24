@@ -1417,6 +1417,19 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
                 "children": null
               }
             ]
+          },
+          {
+            "id": 1747,
+            "parentId": 1736,
+            "name": "债项资产风险台账查询",
+            "path": "assetRiskLedgerQuery",
+            "component": "indebt/debtLedgerQuery/assetRiskLedgerQuery/index",
+            "componentName": "AssetRiskLedgerQuery",
+            "icon": null,
+            "visible": true,
+            "keepAlive": true,
+            "alwaysShow": true,
+            "children": null
           }
         ]
       }
