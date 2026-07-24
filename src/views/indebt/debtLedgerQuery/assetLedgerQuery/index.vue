@@ -58,6 +58,7 @@
         />
         <ActionBar :buttons="assetButtons" />
         <Table
+          :key="assetTableKey"
           :columns="assetColumns"
           :data="assetRows"
           :loading="assetLoading"
@@ -115,6 +116,8 @@ const currentProject = ref<AssetLedgerApi.AssetLedgerProject>()
 const activeStatus = ref<AssetStatus>('inStock')
 const assetRows = ref<AssetLedgerApi.AssetLedgerRecord[]>([])
 const assetLoading = ref(false)
+// 表格列较多，异步回填 Mock 数据后重建一次表格，避免 Element Plus 未重新计算列宽而出现空白区域。
+const assetTableKey = ref(0)
 const assetQuery = reactive({
   customerName: '', coreCustomerNo: '', relatedBusinessContractNo: '', productCode: '', productName: '', orderContractNo: '', orderContractFlowNo: ''
 })
@@ -185,7 +188,11 @@ const backToProjects = () => { detailVisible.value = false; currentProject.value
 const loadAssets = async () => {
   if (!currentProject.value) return
   assetLoading.value = true
-  try { const result = await AssetLedgerApi.getAssetLedgerPage({ ...assetQuery, status: activeStatus.value, projectId: currentProject.value.id, productPlan: currentProductPlan.value }); assetRows.value = result.list || result.records || [] } finally { assetLoading.value = false }
+  try {
+    const result = await AssetLedgerApi.getAssetLedgerPage({ ...assetQuery, status: activeStatus.value, projectId: currentProject.value.id, productPlan: currentProductPlan.value })
+    assetRows.value = result.list || result.records || []
+    assetTableKey.value += 1
+  } finally { assetLoading.value = false }
 }
 const handleAssetSearch = (params: Recordable) => { Object.assign(assetQuery, params); loadAssets() }
 const handleStatusSelect = (key: string) => { activeStatus.value = key as AssetStatus; loadAssets() }
@@ -205,7 +212,8 @@ onActivated(loadProjects)
 .asset-status-menu { width: 230px; flex: 0 0 230px; border: 1px solid var(--el-border-color-lighter); border-radius: 4px; }
 .asset-status-menu :deep(.el-menu-item.is-active) { color: var(--el-color-primary); background: var(--el-color-primary-light-9); }
 .status-dot { display: inline-block; width: 7px; height: 7px; margin-right: 9px; border-radius: 50%; background: var(--el-color-success); }
-.asset-ledger-content { min-width: 0; flex: 1; overflow: hidden; }
+.asset-ledger-content { min-width: 0; flex: 1; overflow-x: auto; overflow-y: visible; padding-bottom: 8px; }
+.asset-ledger-content :deep(.el-table) { min-width: 3400px; }
 .section-heading { display: flex; align-items: center; justify-content: space-between; margin: 2px 0 12px; color: var(--el-text-color-primary); font-size: 18px; font-weight: 600; }
 .image-placeholder { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding: 18px; color: var(--el-text-color-secondary); background: var(--el-fill-color-light); }
 </style>

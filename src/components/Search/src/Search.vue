@@ -124,7 +124,7 @@ defineExpose({
     <Icon v-show="visible" class="mr-4px" icon="ep:minus" />
     <el-button link> 查询条件 </el-button>
   </div>
-  <el-scrollbar max-height="180px" class="mb-2">
+  <el-scrollbar v-show="visible" max-height="180px" class="mb-2">
     <!-- update by 芋艿：class="-mb-15px" 用于降低和 ContentWrap 组件的底部距离，避免空隙过大 -->
     <Form
       v-show="visible"
