@@ -60,8 +60,15 @@ const libraryColumns: CrudSchema[] = [
   { label: '支持资产类型', field: 'supportedAssetType', minWidth: 130 }, { label: '债项因子', field: 'debtFactor', minWidth: 100 }, { label: '预警颜色', field: 'warningColor', minWidth: 90 },
   { label: '规则状态', field: 'ruleStatus', minWidth: 90 }, { label: '更新人', field: 'updatedBy', minWidth: 110 }, { label: '更新日期', field: 'updatedAt', minWidth: 120 }
 ]
-const crudSchemas = computed<CrudSchema[]>(() => [...(mode.value === 'ruleLibrary' ? libraryColumns : commonColumns), { label: '操作', field: 'action', fixed: 'right', width: mode.value === 'ruleLibrary' ? 145 : 150 }])
-const { allSchemas: schemas } = useCrudSchemas(crudSchemas)
+const { allSchemas: commonSchemas } = useCrudSchemas([
+  ...commonColumns,
+  { label: '操作', field: 'action', fixed: 'right', width: 150 }
+])
+const { allSchemas: librarySchemas } = useCrudSchemas([
+  ...libraryColumns,
+  { label: '操作', field: 'action', fixed: 'right', width: 145 }
+])
+const schemas = computed(() => mode.value === 'ruleLibrary' ? librarySchemas : commonSchemas)
 const loadRows = async () => { loading.value = true; try { const params: any = { type: mode.value }; if (mode.value === 'ruleLibrary') params.productPlan = activeFilter.value; else params.status = activeFilter.value; rows.value = await DebtRuleApi.getDebtRuleRecords(params) } finally { loading.value = false } }
 const handleSearch = () => loadRows()
 const message = (text: string) => ElMessage.success(`Mock：${text}`)

@@ -810,6 +810,40 @@ const remainingRouter: AppRouteRecordRaw[] = [
     ]
   },
   {
+    path: '/indebt/debtRuleManagement',
+    component: Layout,
+    name: 'DebtRuleManagementDirect',
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'supplementApply',
+        component: () => import('@/views/indebt/debtRuleManagement/index.vue'),
+        name: 'DebtRuleSupplementApplyDirect',
+        meta: { title: '债项规则补配申请', noCache: true, canTo: true, hidden: true }
+      },
+      {
+        path: 'supplementApproval',
+        component: () => import('@/views/indebt/debtRuleManagement/index.vue'),
+        name: 'DebtRuleSupplementApprovalDirect',
+        meta: { title: '债项规则补配审批', noCache: true, canTo: true, hidden: true }
+      },
+      {
+        path: 'ruleMaintenance',
+        component: () => import('@/views/indebt/debtRuleManagement/index.vue'),
+        name: 'DebtRuleMaintenanceDirect',
+        meta: { title: '债项规则维护', noCache: true, canTo: true, hidden: true }
+      },
+      {
+        path: 'ruleLibrary',
+        component: () => import('@/views/indebt/debtRuleManagement/index.vue'),
+        name: 'DebtRuleLibraryDirect',
+        meta: { title: '债项规则库管理', noCache: true, canTo: true, hidden: true }
+      }
+    ]
+  },
+  {
     path: '/projectInfoMana',
     component:Layout,
     name: 'projectInfoManaDetail',
