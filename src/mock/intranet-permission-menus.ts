@@ -1430,6 +1430,24 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
             "keepAlive": true,
             "alwaysShow": true,
             "children": null
+          },
+          {
+            "id": 1750,
+            "parentId": 1239,
+            "name": "债项规则管理",
+            "path": "debtRuleManagement",
+            "component": null,
+            "componentName": null,
+            "icon": null,
+            "visible": true,
+            "keepAlive": true,
+            "alwaysShow": true,
+            "children": [
+              { "id": 1751, "parentId": 1750, "name": "债项规则补配申请", "path": "supplementApply", "component": "indebt/debtRuleManagement/index", "componentName": "DebtRuleSupplementApply", "icon": null, "visible": true, "keepAlive": true, "alwaysShow": true, "children": null },
+              { "id": 1752, "parentId": 1750, "name": "债项规则补配审批", "path": "supplementApproval", "component": "indebt/debtRuleManagement/index", "componentName": "DebtRuleSupplementApproval", "icon": null, "visible": true, "keepAlive": true, "alwaysShow": true, "children": null },
+              { "id": 1753, "parentId": 1750, "name": "债项规则维护", "path": "ruleMaintenance", "component": "indebt/debtRuleManagement/index", "componentName": "DebtRuleMaintenance", "icon": null, "visible": true, "keepAlive": true, "alwaysShow": true, "children": null },
+              { "id": 1754, "parentId": 1750, "name": "债项规则库管理", "path": "ruleLibrary", "component": "indebt/debtRuleManagement/index", "componentName": "DebtRuleLibrary", "icon": null, "visible": true, "keepAlive": true, "alwaysShow": true, "children": null }
+            ]
           }
         ]
       }

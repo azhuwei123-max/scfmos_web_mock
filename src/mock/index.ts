@@ -118,6 +118,7 @@ import {
 import { assetLedgerProjects, assetLedgerRecords } from './asset-ledger-query'
 import { offlineLedgerQueryProjects, offlineLedgerQueryRecords } from './offline-ledger-query'
 import { assetRiskContractLedgers, assetRiskCustomerLedgers, assetRiskLedgerProjects } from './asset-risk-ledger-query'
+import { debtRuleApprovalRecords, debtRuleLibraryRecords, debtRuleMaintenanceRecords, debtRuleSupplementRecords } from './debt-rule-management'
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const urlPath = (url = '') => url.split('?')[0].replace(/^https?:\/\/[^/]+/, '')
@@ -1045,6 +1046,13 @@ export const mockAdapter: AxiosAdapter = async (config) => {
   } else if (/\/system\/indebt\/asset-risk-ledgers\/contract-page$/.test(url)) {
     const query = { ...urlQuery(config.url), ...(config.params || {}) }
     data = cloneMockData(assetRiskContractLedgers.filter((record) => !query.projectId || record.projectId === Number(query.projectId)))
+  } else if (/\/system\/indebt\/debt-rules\/page$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    const source = query.type === 'supplementApproval' ? debtRuleApprovalRecords : query.type === 'ruleMaintenance' ? debtRuleMaintenanceRecords : query.type === 'ruleLibrary' ? debtRuleLibraryRecords : debtRuleSupplementRecords
+    data = cloneMockData(source.filter((record) =>
+      (!query.status || record.status === query.status) &&
+      (!query.productPlan || record.productPlan === query.productPlan)
+    ))
   } else if (/\/system\/indebt\/order-contract-modifications\/records\/page$/.test(url)) {
     data = orderContractModificationPageData(config, 'records')
   } else if (/\/system\/indebt\/order-contract-modifications\/page$/.test(url)) {
