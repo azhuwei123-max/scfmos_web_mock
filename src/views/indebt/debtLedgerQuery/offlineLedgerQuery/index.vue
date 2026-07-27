@@ -1,26 +1,37 @@
 <template>
-  <ContentWrap v-if="!detailVisible" class="offline-ledger-query-page">
-    <Search
-      :schema="projectSchemas.searchSchema"
-      :model="projectQuery"
-      :default-expand="false"
-      @search="handleProjectSearch"
-      @reset="handleProjectSearch"
+  <div v-if="!detailVisible" class="dynamic-container offline-ledger-query-page">
+    <DynamicNavmenu
+      class="dynamic-navmenu"
+      :active-menu="activeMenu"
+      :menu-list="planMenuList"
+      :customer-openeds="defaultOpeneds"
+      @menu-select="handlePlanSelect"
     />
-    <Table
-      :columns="projectSchemas.tableColumns"
-      :data="projects"
-      :loading="projectLoading"
-      :pagination="{ total: projects.length }"
-      :show-overflow-tooltip="true"
-    >
-      <template #action="{ row }">
-        <el-button link type="primary" @click.stop="openProject(row)">
-          <Icon icon="ep:document" class="mr-3px" />详情
-        </el-button>
-      </template>
-    </Table>
-  </ContentWrap>
+    <main class="component">
+      <ContentWrap>
+        <Search
+          :schema="projectSchemas.searchSchema"
+          :model="projectQuery"
+          :default-expand="false"
+          @search="handleProjectSearch"
+          @reset="handleProjectSearch"
+        />
+        <Table
+          :columns="projectSchemas.tableColumns"
+          :data="projects"
+          :loading="projectLoading"
+          :pagination="{ total: projects.length }"
+          :show-overflow-tooltip="true"
+        >
+          <template #action="{ row }">
+            <el-button link type="primary" @click.stop="openProject(row)">
+              <Icon icon="ep:document" class="mr-3px" />详情
+            </el-button>
+          </template>
+        </Table>
+      </ContentWrap>
+    </main>
+  </div>
 
   <ContentWrap v-else class="offline-ledger-query-detail">
     <div class="detail-header">
@@ -74,13 +85,31 @@
 import { computed, onActivated, onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ActionBar, type ActionButton } from '@/components/ActionBar'
+import DynamicNavmenu from '@/components/dynamicNavmenu/index.vue'
 import { useCrudSchemas, type CrudSchema } from '@/hooks/web/useCrudSchemas'
 import * as OfflineLedgerQueryApi from '@/api/indebt/offlineLedgerQuery'
 
 defineOptions({ name: 'OfflineLedgerQuery' })
 
+type ProductPlanKey = 'prepayment' | 'pledge'
 const route = useRoute()
-const currentProductPlan = computed(() => String(route.path).includes('/pledge') ? '货押融资' : '先票/款后货')
+const initialPlan: ProductPlanKey = String(route.path).includes('/pledge') ? 'pledge' : 'prepayment'
+const activePlan = ref<ProductPlanKey>(initialPlan)
+const activeMenu = ref(`${initialPlan}-ledger`)
+const currentProductPlan = computed(() => activePlan.value === 'pledge' ? '货押融资' : '先票/款后货')
+const defaultOpeneds = [initialPlan]
+const planMenuList = [
+  {
+    key: 'prepayment',
+    title: '先票/款后货',
+    children: [{ key: 'prepayment-ledger', title: '线下台账查询', plan: 'prepayment' }]
+  },
+  {
+    key: 'pledge',
+    title: '货押融资',
+    children: [{ key: 'pledge-ledger', title: '线下台账查询', plan: 'pledge' }]
+  }
+]
 const projects = ref<OfflineLedgerQueryApi.OfflineLedgerQueryProject[]>([])
 const projectLoading = ref(false)
 const projectQuery = reactive({ projectNo: '', projectName: '', coreEnterpriseName: '', coreCustomerNo: '' })
@@ -116,6 +145,10 @@ const loadProjects = async () => {
   } finally { projectLoading.value = false }
 }
 const handleProjectSearch = (params: Recordable) => { Object.assign(projectQuery, params); loadProjects() }
+const handlePlanSelect = (menu: { key: string; plan?: ProductPlanKey }) => {
+  if (menu.plan) activePlan.value = menu.plan
+  activeMenu.value = menu.key
+}
 const openProject = async (project: OfflineLedgerQueryApi.OfflineLedgerQueryProject) => {
   currentProject.value = project
   detailVisible.value = true
@@ -143,9 +176,13 @@ onActivated(loadProjects)
 </script>
 
 <style scoped lang="scss">
+.offline-ledger-query-page { display: flex; min-width: 0; min-height: calc(100vh - 150px); background: #f5f6f8; }
+.offline-ledger-query-page .dynamic-navmenu { width: 228px; min-width: 228px; flex: 0 0 228px; background: #f1f1f1 !important; }
+.offline-ledger-query-page .component { min-width: 0; flex: 1; overflow: auto; }
 .detail-header { display: flex; align-items: center; min-height: 52px; margin: -4px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--el-border-color-lighter); }
 .detail-title { margin-left: 20px; color: var(--el-text-color-primary); font-size: 20px; font-weight: 600; }
 .section-heading { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 12px; color: var(--el-text-color-primary); font-size: 18px; font-weight: 600; }
 .ledger-note { margin-top: 12px; color: var(--el-text-color-secondary); font-size: 13px; }
 .image-placeholder { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding: 18px; color: var(--el-text-color-secondary); background: var(--el-fill-color-light); }
+@media (max-width: 900px) { .offline-ledger-query-page .dynamic-navmenu { width: 198px; min-width: 198px; flex-basis: 198px; } }
 </style>
