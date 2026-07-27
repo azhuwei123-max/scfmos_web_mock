@@ -1,26 +1,37 @@
 <template>
-  <ContentWrap v-if="!detailVisible" class="asset-ledger-query-page">
-    <Search
-      :schema="projectSchemas.searchSchema"
-      :model="projectQuery"
-      :default-expand="false"
-      @search="handleProjectSearch"
-      @reset="handleProjectSearch"
+  <div v-if="!detailVisible" class="dynamic-container asset-ledger-query-page">
+    <DynamicNavmenu
+      class="dynamic-navmenu"
+      :active-menu="activeMenu"
+      :menu-list="planMenuList"
+      :customer-openeds="defaultOpeneds"
+      @menu-select="handlePlanSelect"
     />
-    <Table
-      :columns="projectSchemas.tableColumns"
-      :data="projects"
-      :loading="projectLoading"
-      :pagination="{ total: projects.length }"
-      :show-overflow-tooltip="true"
-    >
-      <template #action="{ row }">
-        <el-button link type="primary" @click.stop="openProject(row)">
-          <Icon icon="ep:document" class="mr-3px" />详情
-        </el-button>
-      </template>
-    </Table>
-  </ContentWrap>
+    <main class="component">
+      <ContentWrap>
+        <Search
+          :schema="projectSchemas.searchSchema"
+          :model="projectQuery"
+          :default-expand="false"
+          @search="handleProjectSearch"
+          @reset="handleProjectSearch"
+        />
+        <Table
+          :columns="projectSchemas.tableColumns"
+          :data="projects"
+          :loading="projectLoading"
+          :pagination="{ total: projects.length }"
+          :show-overflow-tooltip="true"
+        >
+          <template #action="{ row }">
+            <el-button link type="primary" @click.stop="openProject(row)">
+              <Icon icon="ep:document" class="mr-3px" />详情
+            </el-button>
+          </template>
+        </Table>
+      </ContentWrap>
+    </main>
+  </div>
 
   <ContentWrap v-else class="asset-ledger-detail-page">
     <div class="detail-header">
@@ -102,14 +113,32 @@
 import { computed, onActivated, onMounted, reactive, ref, unref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ActionBar, type ActionButton } from '@/components/ActionBar'
+import DynamicNavmenu from '@/components/dynamicNavmenu/index.vue'
 import { useCrudSchemas, type CrudSchema } from '@/hooks/web/useCrudSchemas'
 import * as AssetLedgerApi from '@/api/indebt/assetLedgerQuery'
 
 defineOptions({ name: 'AssetLedgerQuery' })
 
 type AssetStatus = AssetLedgerApi.AssetLedgerStatus
+type ProductPlanKey = 'prepayment' | 'pledge'
 const route = useRoute()
-const currentProductPlan = computed(() => String(route.path).includes('/pledge') ? '货押融资' : '先票/款后货')
+const initialPlan: ProductPlanKey = String(route.path).includes('/pledge') ? 'pledge' : 'prepayment'
+const activePlan = ref<ProductPlanKey>(initialPlan)
+const activeMenu = ref(`${initialPlan}-ledger`)
+const currentProductPlan = computed(() => activePlan.value === 'pledge' ? '货押融资' : '先票/款后货')
+const defaultOpeneds = [initialPlan]
+const planMenuList = [
+  {
+    key: 'prepayment',
+    title: '先票/款后货',
+    children: [{ key: 'prepayment-ledger', title: '债项资产台账查询', plan: 'prepayment' }]
+  },
+  {
+    key: 'pledge',
+    title: '货押融资',
+    children: [{ key: 'pledge-ledger', title: '债项资产台账查询', plan: 'pledge' }]
+  }
+]
 const projects = ref<AssetLedgerApi.AssetLedgerProject[]>([])
 const projectLoading = ref(false)
 const projectQuery = reactive({ projectNo: '', projectName: '', coreEnterpriseName: '', coreCustomerNo: '' })
@@ -185,6 +214,10 @@ const loadProjects = async () => {
   try { projects.value = await AssetLedgerApi.getAssetLedgerProjects({ ...projectQuery, productPlan: currentProductPlan.value }) } finally { projectLoading.value = false }
 }
 const handleProjectSearch = (params: Recordable) => { Object.assign(projectQuery, params); loadProjects() }
+const handlePlanSelect = (menu: { key: string; plan?: ProductPlanKey }) => {
+  if (menu.plan) activePlan.value = menu.plan
+  activeMenu.value = menu.key
+}
 const openProject = async (project: AssetLedgerApi.AssetLedgerProject) => {
   currentProject.value = project
   activeStatus.value = 'inStock'
@@ -213,7 +246,10 @@ onActivated(loadProjects)
 </script>
 
 <style scoped lang="scss">
-.asset-ledger-query-page, .asset-ledger-detail-page { min-width: 0; }
+.asset-ledger-query-page { display: flex; min-width: 0; min-height: calc(100vh - 150px); background: #f5f6f8; }
+.asset-ledger-query-page .dynamic-navmenu { width: 228px; min-width: 228px; flex: 0 0 228px; background: #f1f1f1 !important; }
+.asset-ledger-query-page .component { min-width: 0; flex: 1; overflow: auto; }
+.asset-ledger-detail-page { min-width: 0; }
 .detail-header { display: flex; align-items: center; min-height: 52px; margin: -4px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--el-border-color-lighter); }
 .detail-title { margin-left: 20px; color: var(--el-text-color-primary); font-size: 20px; font-weight: 600; }
 .asset-ledger-layout { display: flex; gap: 16px; min-height: calc(100vh - 340px); }
@@ -224,4 +260,5 @@ onActivated(loadProjects)
 .asset-ledger-content :deep(.el-table) { min-width: 3400px; }
 .section-heading { display: flex; align-items: center; justify-content: space-between; margin: 2px 0 12px; color: var(--el-text-color-primary); font-size: 18px; font-weight: 600; }
 .image-placeholder { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding: 18px; color: var(--el-text-color-secondary); background: var(--el-fill-color-light); }
+@media (max-width: 900px) { .asset-ledger-query-page .dynamic-navmenu { width: 198px; min-width: 198px; flex-basis: 198px; } }
 </style>

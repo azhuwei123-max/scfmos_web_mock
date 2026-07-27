@@ -856,6 +856,12 @@ const remainingRouter: AppRouteRecordRaw[] = [
         component: () => import('@/views/indebt/debtLedgerQuery/orderContractLedgerQuery/index.vue'),
         name: 'OrderContractLedgerQueryDirect',
         meta: { title: '订单/合同台账查询', noCache: true, canTo: true, hidden: true }
+      },
+      {
+        path: 'assetLedgerQuery',
+        component: () => import('@/views/indebt/debtLedgerQuery/assetLedgerQuery/index.vue'),
+        name: 'AssetLedgerQueryDirect',
+        meta: { title: '债项资产台账查询', noCache: true, canTo: true, hidden: true }
       }
     ]
   },
