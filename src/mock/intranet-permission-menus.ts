@@ -1303,40 +1303,13 @@ export const intranetPermissionMenus: IntranetPermissionMenu[] = JSON.parse(Stri
             "parentId": 1736,
             "name": "订单/合同台账查询",
             "path": "orderContractLedgerQuery",
-            "component": null,
-            "componentName": null,
+            "component": "indebt/debtLedgerQuery/orderContractLedgerQuery/index",
+            "componentName": "OrderContractLedgerQuery",
             "icon": null,
             "visible": true,
             "keepAlive": true,
             "alwaysShow": true,
-            "children": [
-              {
-                "id": 1739,
-                "parentId": 1738,
-                "name": "先票/款后货",
-                "path": "prepayment",
-                "component": "indebt/debtLedgerQuery/orderContractLedgerQuery/index",
-                "componentName": "OrderContractLedgerPrepayment",
-                "icon": null,
-                "visible": true,
-                "keepAlive": true,
-                "alwaysShow": true,
-                "children": null
-              },
-              {
-                "id": 1740,
-                "parentId": 1738,
-                "name": "货押融资",
-                "path": "pledge",
-                "component": "indebt/debtLedgerQuery/orderContractLedgerQuery/index",
-                "componentName": "OrderContractLedgerPledge",
-                "icon": null,
-                "visible": true,
-                "keepAlive": true,
-                "alwaysShow": true,
-                "children": null
-              }
-            ]
+            "children": null
           },
           {
             "id": 1741,
