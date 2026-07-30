@@ -148,6 +148,13 @@ import {
   supplyChainDecisionPage
 } from './supply-chain-decision-data'
 import {
+  cancelProjectParamAdjustmentRecord,
+  createProjectParamAdjustmentRecord,
+  projectParamAdjustmentMenu,
+  projectParamAdjustmentPage,
+  projectParamAdjustmentProjects
+} from './project-param-adjustment'
+import {
   companyCustomerDetail,
   companyCustomerList,
   companyCustomerPageVO,
@@ -566,7 +573,9 @@ export const mockAdapter: AxiosAdapter = async (config) => {
       ? cloneMockData(financingApplicationMenu)
       : query.codeNo === 'BookInContractMain'
         ? cloneMockData(contractRegistrationMenu)
-      : optionData
+        : query.codeNo === 'ParamAdjustApplyMain'
+          ? cloneMockData(projectParamAdjustmentMenu)
+        : optionData
   } else if (/\/system\/putout-info\/getMenuList$/.test(url)) {
     const query = { ...urlQuery(config.url), ...(config.params || {}) }
     data = query.codeNo === 'PutOutApplyMain' ? cloneMockData(loanApplicationMenu) : optionData
@@ -591,6 +600,16 @@ export const mockAdapter: AxiosAdapter = async (config) => {
   } else if (/\/system\/ProjectWhiteList\/getProjectWhiteList$/.test(url)) {
     const query = { ...urlQuery(config.url), ...(config.params || {}) }
     data = cloneMockData(supplyChainDecisionPage(query))
+  } else if (/\/system\/paramAdjust\/page$/.test(url)) {
+    const query = { ...urlQuery(config.url), ...(config.params || {}) }
+    data = cloneMockData(projectParamAdjustmentPage(query))
+  } else if (/\/system\/paramAdjust\/qryProjectNameListPage$/.test(url)) {
+    data = { total: projectParamAdjustmentProjects.length, list: cloneMockData(projectParamAdjustmentProjects), records: cloneMockData(projectParamAdjustmentProjects) }
+  } else if (/\/system\/paramAdjust\/addApply$/.test(url)) {
+    data = cloneMockData(createProjectParamAdjustmentRecord(parseMockPayload(config.data)))
+  } else if (/\/system\/paramAdjust\/cancelApply$/.test(url)) {
+    const payload = parseMockPayload(config.data)
+    data = { success: Boolean(cancelProjectParamAdjustmentRecord(payload.serialNo || payload.serialno)) }
   } else if (/\/system\/ContractTask\/ContractTaskList$/.test(url)) {
     const query = { ...urlQuery(config.url), ...(config.params || {}) }
     data = cloneMockData(linkedQuotaApprovalMenus[String(query.flag || 'N') as 'N' | 'Y'] || [])

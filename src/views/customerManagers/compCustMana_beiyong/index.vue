@@ -1,5 +1,4 @@
 <template>
-
   <!-- 列表 -->
   <ContentWrap>
     <!-- 搜索工作栏 -->
@@ -56,7 +55,9 @@
         <el-button @click="search" size="default" tpye=""
           ><Icon class="mr-5px" icon="ep:search" /> 查询
         </el-button>
-        <el-button @click="reSearch" size="default"> <Icon class="mr-5px" icon="ep:refresh" />重置 </el-button>
+        <el-button @click="reSearch" size="default">
+          <Icon class="mr-5px" icon="ep:refresh" />重置
+        </el-button>
       </el-form-item>
     </el-form>
     <div style="display: flex; margin-bottom: 17px">
@@ -73,17 +74,12 @@
         <el-button @click="doRiskDetection(doRiskDetectionAction)" plain> 客户信息检查 </el-button>
         <el-button @click="reqPermissionClick" plain> 权限申请 </el-button>
         <!-- <el-button @click="button1" plain tpye=""> 集团客户关联搜索 </el-button> -->
-        <el-button @click="handleGetCustomerOwnership" plain> 获取客户主办权 </el-button> 
-        <el-button @click="jumpIframePage1" plain tpye=""> 移交主办权 </el-button> 
-        <el-button @click="jumpIframePage2" plain tpye=""> 接收主办权 </el-button> 
-       <el-button @click="handleSyncCreditLimit" plain> 同步额度系统 </el-button>                   
-        <el-button @click="del" plain>
-          删除
-        </el-button>
-        <el-button @click="addTeam" plain>
-          加入供应链群成员
-        </el-button>
-        <el-button @click="ruleTest" plain> 配置规则test </el-button>                   
+        <!-- <el-button @click="handleGetCustomerOwnership" plain> 获取客户主办权 </el-button> -->
+        <!-- <el-button @click="button1" plain tpye=""> 移交主办权 </el-button> -->
+        <!-- <el-button @click="button1" plain tpye=""> 接收主办权 </el-button> -->
+        <!--<el-button @click="handleSyncCreditLimit" plain> 同步额度系统 </el-button> -->
+        <el-button @click="del" plain> 删除 </el-button>
+        <el-button @click="addTeam" plain> 加入供应链群成员 </el-button>
       </div>
     </div>
     <el-table
@@ -133,7 +129,6 @@
       ref="CustomerIdChangeDialog"
       :initial-data="{ CustomerType: '0110' }"
       :add-loading="addLoading"
-      :is-comp-customer="true"
       title="新增"
       show-org-type
       @confirm="handleAddConfirm"
@@ -157,8 +152,6 @@
       @refresh="getList"
       @cancel="handleCreditFlowApprovalCancel"
     />
-
-    <ruleTestComp ref="ruleTestCompRef" />
   </ContentWrap>
 </template>
 
@@ -172,8 +165,6 @@ import reqPermission from './components/reqPermission.vue'
 import { useMessage } from '@/hooks/web/useMessage'
 import { personalApi } from '@/api/customerInfoMGM/personal'
 import { useRiskDetection } from '@/views/creditApplicationMGM/approvalChangeRequest/hooks'
-import { getIframeUrl } from '@/components/busiComp/crmsIframe/api'
-import ruleTestComp from './components/ruleTestComp/pop.vue'
 
 defineOptions({
   name: '/compCustMana'
@@ -207,36 +198,6 @@ const add = (type, id) => {
   console.log('qweqweqw', addCustomerDialogVisible.value)
   addCustomerDialogVisible.value = true
 }
-//移交主办权
-const jumpIframePage1 = async () => {
-  loading.value = true
-   await Api.hostingRight()
-  const res = await getIframeUrl({ tpopentype: 'HostingRight',tpserialno:'0110' }).finally(
-    () => (loading.value = false)
-  )
-  router.push({
-    name: 'IframeView',
-    query: {
-      url: encodeURIComponent(res),
-      title: encodeURIComponent('移交主办权')
-    }
-  })
-}
-//接收主办权
-const jumpIframePage2 = async () => {
-  loading.value = true
-  await Api.receiveRight()
-  const res = await getIframeUrl({ tpopentype: 'ReceiveRight',tpserialno:'0110'}).finally(
-    () => (loading.value = false)
-  )
-  router.push({
-    name: 'IframeView',
-    query: {
-      url: encodeURIComponent(res),
-      title: encodeURIComponent('接收主办权')
-    }
-  })
-}
 
 const { confirmFetch } = useMessage()
 const del = () => {
@@ -257,10 +218,13 @@ const tableRef = ref()
 const goDetail = (item) => {
   if (!currentRow.value?.customerID && !item) return ElMessage.warning('请选择')
 
-  if (['belongAttribute', 'belongAttribute1', 'belongAttribute2'].every(v => currentRow.value[v] !== '有')) {
+  if (
+    ['belongAttribute', 'belongAttribute1', 'belongAttribute2'].every(
+      (v) => currentRow.value[v] !== '有'
+    )
+  ) {
     return ElMessage.warning('对不起，你没有查看该客户的权限！')
   }
-
 
   router.push({
     path: '/customerManagers/compCustManalDetail',
@@ -270,8 +234,7 @@ const goDetail = (item) => {
     }
   })
 }
- const goInDetail = (item) => {
- 
+const goInDetail = (item) => {
   // if (['belongAttribute', 'belongAttribute1', 'belongAttribute2'].every(v => currentRow.value[v] !== '有')) {
   //   return ElMessage.warning('对不起，你没有查看该客户的权限！')
   // }
@@ -279,13 +242,11 @@ const goDetail = (item) => {
   router.push({
     path: '/customerManagers/compCustManalDetail',
     query: {
-      customerID:item?.customerId,
+      customerID: item?.customerId,
       t: new Date().getTime() // 解决重复打开相同详情，详情页面不加载的问题
     }
   })
- }
-
-
+}
 
 const addCustomerOk = () => {
   router.push({
@@ -310,7 +271,7 @@ const CustomerIdChangeDialog = ref()
 const addLoading = ref(false)
 
 const handleAddConfirm = (params) => {
-   console.log('params', params)
+  console.log('params', params)
   addLoading.value = true
   Api.addCustomer({ CustomerType: '0110', ...params })
     .then((res) => {
@@ -327,14 +288,16 @@ const handleAddConfirm = (params) => {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
-          }).then(_ => {
-            reqPermissionRef.value.open(info.rightHost, { backToDetail: true, customerId: info.customerId })
+          }).then((_) => {
+            reqPermissionRef.value.open(info.rightHost, {
+              backToDetail: true,
+              customerId: info.customerId
+            })
           })
         } else {
           goInDetail({ customerId: info.customerId })
           ElMessage.success(info?.returnMsg || '新增成功')
         }
-        
       }
     })
     .catch((error) => {
@@ -350,9 +313,9 @@ const handleAddConfirm = (params) => {
 }
 
 const handleAddCancel = () => {}
+
 // 权限申请
 const reqPermissionRef = ref()
-
 const reqPermissionClick = () => {
   if (!currentRow.value?.customerID) return ElMessage.warning('请选择')
 
@@ -380,18 +343,9 @@ const handleGetCustomerOwnership = async () => {
     var params = {}
     params.customerId = currentRow.value?.customerID
     const res = await personalApi.getCustomerRight(params)
-    console.log(res)
-    if(res.GetHost == 'Y'){
-      reqPermissionRef.value.open({
-        ...currentRow.value,
-        isHostRights: true
-      })
-    }else{
-      ElMessage.success('获取成功')
-      getList()
-    }
+    ElMessage.success('获取成功')
+    getList()
   } finally {
-
     loading.value = false
   }
 }
@@ -434,16 +388,11 @@ const doRiskDetectionAction = () => {
     rskTp: 1,
     params: {
       ObjectType: 'Customer',
-      ObjectNo: currentRow.value.customerID,
+      ObjectNo: currentRow.value.customerID
     }
   }
 }
 const button1 = () => {
   ElMessage.info('功能待实现')
-}
-
-const ruleTestCompRef = ref()
-const ruleTest = () => {
-  ruleTestCompRef.value.open()
 }
 </script>
