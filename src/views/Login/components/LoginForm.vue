@@ -15,7 +15,7 @@
       >
         <el-row class='loginRow' style="margin-right: -10px; margin-left: -10px">
           <el-col style="display: flex" class="justify-center p-50px pb-20px">
-            <img style="width: 163px;height: 136px;" src="@/assets/imgs/logo-bank.png" />
+            <img style="width: 132px;height: 132px;" src="@/assets/imgs/platform-mark.svg" alt="供应链原型平台" />
           </el-col>
           <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
             <el-form-item>
@@ -131,7 +131,7 @@ const loginData = reactive({
   captchaEnable: import.meta.env.VITE_APP_CAPTCHA_ENABLE,
   tenantEnable: import.meta.env.VITE_APP_TENANT_ENABLE,
   loginForm: {
-    tenantName: '供应链金融管理作业平台系统',
+    tenantName: '供应链原型平台',
     username: '',
     password: '',
     captchaVerification: '',
