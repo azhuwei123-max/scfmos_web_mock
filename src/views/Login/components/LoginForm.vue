@@ -231,12 +231,12 @@ const handleLogin = async (params) => {
     }
     loginData.loginForm.captchaVerification = params.captchaVerification
     const res = await LoginApi.login({
-      // password:encrypt(loginData.loginForm.password),
-      password:encrypt(loginData.loginForm.password),
-      // password:loginData.loginForm.password,
+      // 真实服务的登录接口按接口文档接收原始密码；加密仅保留给历史内网版本。
+      password: loginData.loginForm.password,
       rememberMe:loginData.loginForm.rememberMe,
       tenantName:loginData.loginForm.tenantName,
       username:loginData.loginForm.username,
+      captchaVerification: loginData.loginForm.captchaVerification,
     })
     if (!res) {
       return
@@ -288,7 +288,7 @@ const handleLogin = async (params) => {
     // }
   } finally {
     loginLoading.value = false
-    loading.value.close()
+    loading.value?.close()
   }
 }
 const onSubmit = async () => {
