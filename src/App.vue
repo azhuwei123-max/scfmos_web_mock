@@ -7,9 +7,11 @@ import routerSearch from '@/components/RouterSearch/index.vue'
 import { FuncDialog } from '@/components/Dialog'
 import { useVersionCheck } from './composables/useVersionCheck'
 import VerifyNotify from '@/components/VersionNotify/index.vue'
-import {  getDictLabel } from '@/utils/dict'
+import { getDictLabel } from '@/utils/dict'
 
 defineOptions({ name: 'APP' })
+
+// 废代码谢楠测试
 
 const { getPrefixCls } = useDesign()
 const prefixCls = getPrefixCls('app')
@@ -17,13 +19,13 @@ const appStore = useAppStore()
 const currentSize = computed(() => appStore.getCurrentSize)
 const greyMode = computed(() => appStore.getGreyMode)
 const { wsCache } = useCache()
- 
 
-
-const checkVersionTime = getDictLabel('config','checkVersionTime') ?? 60 // 没配置的话默认30S
+const checkVersionTime = getDictLabel('config', 'checkVersionTime') ?? 60 // 没配置的话默认30S
 //版本检测（仅在非dev环境启用）
 // const checkInterval = import.meta.env.DEV ? 100 * 1000 : 5 * 1 * 1000
-const {hasUpdate} =import.meta.env.DEV ? { hasUpdate:ref(false) } : useVersionCheck(Number(checkVersionTime) * 1000)
+const { hasUpdate } = import.meta.env.DEV
+  ? { hasUpdate: ref(false) }
+  : useVersionCheck(Number(checkVersionTime) * 1000)
 
 // 根据浏览器当前主题设置系统主题色
 const setDefaultTheme = () => {
